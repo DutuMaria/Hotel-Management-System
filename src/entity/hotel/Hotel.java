@@ -2,6 +2,7 @@ package entity.hotel;
 
 import entity.booking.Booking;
 import entity.payment.Payment;
+import entity.review.Review;
 import entity.room.Room;
 import entity.user.Customer;
 
@@ -18,6 +19,7 @@ public class Hotel {
     private List<Customer> customerList;
     private List<Booking> bookingList;
     private List<Payment> paymentList;
+    private List<Review> reviewList;
     private EnumSet<HotelServices> hotelServices;
 
     private Hotel() {
@@ -29,6 +31,7 @@ public class Hotel {
         customerList = new ArrayList<>();
         bookingList = new ArrayList<>();
         paymentList = new ArrayList<>();
+        reviewList = new ArrayList<>();
     }
 
     public static Hotel getHotelInstance() {
@@ -90,6 +93,14 @@ public class Hotel {
 
     public void setPaymentList(List<Payment> paymentList) {
         this.paymentList = paymentList;
+    }
+
+    public List<Review> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<Review> reviewList) {
+        this.reviewList = reviewList;
     }
 
     public EnumSet<HotelServices> getHotelServices() {

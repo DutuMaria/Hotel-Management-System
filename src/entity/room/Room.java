@@ -6,8 +6,6 @@ public abstract class Room{
     //    protected Integer floor;
     protected RoomStatus roomStatus;
     protected RoomType roomType;
-    protected final static Double PRICE_SINGLE_ROOM = 30d;
-    protected final static Double PRICE_DOUBLE_ROOM = 50d;
 
     public Room(RoomType roomType) {
         count++;

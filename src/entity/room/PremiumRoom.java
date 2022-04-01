@@ -10,9 +10,9 @@ public class PremiumRoom extends Room{
     @Override
     public Double getPrice() {
         if (this.roomType == RoomType.SINGLE){
-            return pricePremiumRoom + PRICE_SINGLE_ROOM;
+            return pricePremiumRoom + RoomType.SINGLE.getPrice();
         }
-        return pricePremiumRoom + PRICE_DOUBLE_ROOM;
+        return pricePremiumRoom + RoomType.DOUBLE.getPrice();
     }
 
     @Override

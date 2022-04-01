@@ -10,9 +10,9 @@ public class StandardRoom extends Room {
     @Override
     public Double getPrice() {
         if (this.roomType == RoomType.SINGLE){
-            return priceStandardRoom + PRICE_SINGLE_ROOM;
+            return priceStandardRoom + RoomType.SINGLE.getPrice();
         }
-        return priceStandardRoom + PRICE_DOUBLE_ROOM;
+        return priceStandardRoom + RoomType.DOUBLE.getPrice();
     }
 
     @Override

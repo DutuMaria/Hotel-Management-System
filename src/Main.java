@@ -1,17 +1,19 @@
+import entity.booking.Booking;
 import entity.hotel.Hotel;
-import entity.room.PremiumRoom;
-import entity.room.Room;
-import entity.room.RoomType;
-import entity.room.StandardRoom;
+import entity.payment.Payment;
+import entity.payment.PaymentMethod;
+import entity.payment.PaymentStatus;
+import entity.room.*;
 import entity.service.AdminService;
 import entity.service.CustomerService;
 import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.awt.print.Book;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -55,14 +57,40 @@ public class Main {
         roomList.add(room10);
         hotel.setRoomList(roomList);
 
+        Set<Room> roomSet1 = new HashSet<>();
+        roomSet1.add(room1);
+        roomSet1.add(room10);
+        Booking booking1 = new Booking(customer1, roomSet1, LocalDate.of(2022, 4, 15), LocalDate.of(2022, 4, 18));
+        for (Room room : roomSet1){
+            room.setRoomStatus(RoomStatus.UNAVAILABLE);
+        }
+        hotel.getBookingList().add(booking1);
+        customer1.getBookingSet().add(booking1);
 
-////        LocalDate da1 = LocalDate.now();
-////        LocalDate dd1 = LocalDate.of(2022, 3, 28);
-//
-//        Booking booking1 = new Booking(customer1, roomList1, LocalDate.of(2022, 3, 26), LocalDate.of(2022, 3, 28));
-//
-//        System.out.println(booking1.calculatePayment());
-//        System.out.println(booking1);
+        Payment payment1 = new Payment(1,booking1);
+        Customer customerX = booking1.getCustomer();
+        customerX.getPaymentSet().add(payment1);
+
+        Set<Room> roomSet2 = new HashSet<>();
+        roomSet2.add(room2);
+        Booking booking2 = new Booking(customer1, roomSet2, LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 12));
+        room2.setRoomStatus(RoomStatus.UNAVAILABLE);
+        hotel.getBookingList().add(booking2);
+        customer1.getBookingSet().add(booking2);
+
+        Set<Room> roomSet3 = new HashSet<>();
+        roomSet2.add(room3);
+        Booking booking3 = new Booking(customer2, roomSet3, LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 12));
+        room3.setRoomStatus(RoomStatus.UNAVAILABLE);
+        hotel.getBookingList().add(booking3);
+        customer2.getBookingSet().add(booking3);
+
+        Payment payment3 = new Payment(3,booking3);
+        payment3.setPaymentMethod(PaymentMethod.CARD);
+        payment3.setPaymentStatus(PaymentStatus.PAID);
+        payment3.setTime(LocalDateTime.now());
+        Customer customerY = booking3.getCustomer();
+        customerY.getPaymentSet().add(payment3);
 
         System.out.println("\n\t -------------------- LOGIN --------------------");
         System.out.println("\t Choose your account type (1/2/3):");

@@ -1,6 +1,7 @@
 package entity.booking;
 
 import entity.room.Room;
+import entity.room.RoomStatus;
 import entity.user.Customer;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class Booking {
         this.arrival = arrival;
         this.departure = departure;
         this.payment = this.calculatePayment();
+
     }
 
     public Integer getId() {
@@ -60,6 +62,14 @@ public class Booking {
 
     public void setPayment(Double payment) {
         this.payment = payment;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     private Double calculatePayment(){

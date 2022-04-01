@@ -5,12 +5,14 @@ import entity.hotel.Hotel;
 import entity.payment.Payment;
 import entity.payment.PaymentMethod;
 import entity.payment.PaymentStatus;
+import entity.review.Review;
 import entity.room.Room;
 import entity.room.RoomStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -127,7 +129,7 @@ public class Customer extends User  {
                 room.setRoomStatus(RoomStatus.UNAVAILABLE);
             }
             hotel.getBookingList().add(booking);
-            Payment payment = new Payment(booking.getId(), booking.getPayment(), booking);
+            Payment payment = new Payment(booking.getId(), booking);
             hotel.getPaymentList().add(payment);
             this.bookingSet.add(booking);
             this.paymentSet.add(payment);
@@ -184,6 +186,34 @@ public class Customer extends User  {
             }
         }
         System.out.println("This booking doesn't exist.");
+    }
+
+    public void reviewHotel(){
+        Scanner scanner = new Scanner(System.in);
+        Hotel hotel = Hotel.getHotelInstance();
+        List<Customer> customers = hotel.getCustomerList();
+        for (Booking booking : hotel.getBookingList()){
+            if (booking.getCustomer() == this){
+                System.out.println("Rate the hotel (type 1/2/3/4/5)");
+                int stars = Integer.parseInt(scanner.nextLine());
+                System.out.println("Rate the service (type 1/2/3/4/5)");
+                int serviceRaiting = Integer.parseInt(scanner.nextLine());
+                System.out.println("Rate the rooms (type 1/2/3/4/5)");
+                int roomsRaiting = Integer.parseInt(scanner.nextLine());
+                System.out.println("Rate the cleanliness (type 1/2/3/4/5)");
+                int cleanlinessRaiting = Integer.parseInt(scanner.nextLine());
+                System.out.println("Rate the sleepQuality (type 1/2/3/4/5)");
+                int sleepQualityRaiting = Integer.parseInt(scanner.nextLine());
+                System.out.println("Write a review");
+                String description  = scanner.nextLine();
+                LocalDate date = LocalDate.now();
+                Review review = new Review(stars, serviceRaiting, roomsRaiting, cleanlinessRaiting, sleepQualityRaiting, description, date);
+                hotel.getReviewList().add(review);
+                System.out.println("Thank you for reviewing!");
+                return;
+            }
+        }
+        System.out.println("You can't review this hotel unless you have a booking!\n");
     }
 
     public void checkOut(int idBooking){

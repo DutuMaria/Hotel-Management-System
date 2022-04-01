@@ -12,7 +12,7 @@ public class Payment {
     private Booking booking;
     private LocalDateTime time;
 
-    public Payment(Integer id, Double totalPrice, Booking booking) {
+    public Payment(Integer id, Booking booking) {
         this.id = booking.getId();
         this.totalPrice = booking.getPayment();
 //        this.paymentMethod = paymentMethod;
