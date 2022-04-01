@@ -8,18 +8,8 @@ This project implements the basics necessities of a real hotel, managing custome
 |    AdminService     |   CustomerService   |
 |:-------------------:|:-------------------:|
 |        logIn        |        logIn        |
-|       logOut        |       logOut        |
+|       logOut        |       logOut        |    
 | showFunctionalities | showFunctionalities |
-
-#### LogIn
-![](/img/login.png)
-
-#### Admin menu
-![](/img/menuAdmin.png)
-
-#### Customer menu
-![](/img/menuCustomer.png)
-
 
 |      Admin       |     Customer      |
 |:----------------:|:-----------------:|
@@ -31,6 +21,16 @@ This project implements the basics necessities of a real hotel, managing custome
 | changeRoomStatus |  changeUsername   |
 |  changeRoomType  |    reviewHotel    |
 |    deleteRoom    |     checkOut      |
+
+#### LogIn
+![](/img/login.png)
+
+#### Admin menu
+![](/img/menuAdmin.png)
+
+#### Customer menu
+![](/img/menuCustomer.png)
+
 
 ------------------------------
     - changeRoomStatus (UNAVAILABLE <-> AVAILABLE)
