@@ -49,7 +49,7 @@ public class CustomerService implements ServiceInterface {
         int option = 0;
         while (option != 9){
             System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
-            System.out.println("\t Choose a functionality (1/2/3/4/5/6):");
+            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
             System.out.println("\t 1. View profile.");
             System.out.println("\t 2. View hotel services.");
             System.out.println("\t 3. Create a booking.");
