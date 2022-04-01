@@ -1,12 +1,13 @@
-package entity.service;
+package service;
 
 import entity.hotel.Hotel;
+import service.ServiceInterface;
 import entity.user.Customer;
 import entity.user.User;
 
 import java.util.Scanner;
 
-public class CustomerService implements ServiceInterface{
+public class CustomerService implements ServiceInterface {
     private static CustomerService customerService;
 
     private CustomerService(){}
@@ -92,3 +93,4 @@ public class CustomerService implements ServiceInterface{
         }
     }
 }
+

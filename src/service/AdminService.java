@@ -1,13 +1,14 @@
-package entity.service;
+package service;
 
 import entity.room.RoomStatus;
 import entity.room.RoomType;
+import service.ServiceInterface;
 import entity.user.Admin;
 import entity.user.User;
 
 import java.util.Scanner;
 
-public class AdminService implements ServiceInterface{
+public class AdminService implements ServiceInterface {
     private static AdminService adminService;
 
     private AdminService(){}

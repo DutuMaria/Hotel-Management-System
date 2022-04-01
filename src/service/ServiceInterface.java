@@ -1,5 +1,4 @@
-package entity.service;
-
+package service;
 
 import entity.user.User;
 
