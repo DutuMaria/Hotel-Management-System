@@ -12,13 +12,13 @@ This project implements the basics necessities of a real hotel, managing custome
 | showFunctionalities | showFunctionalities |
 
 #### LogIn
-![](/PAO_Hotel-Management-System/img/login.jpg)
+![](/PAO_Hotel-Management-System/img/login.png)
 
 #### Admin menu
-![](/PAO_Hotel-Management-System/img/menuAdmin.jpg)
+![](/PAO_Hotel-Management-System/img/menuAdmin.png)
 
 #### Customer menu
-![](/PAO_Hotel-Management-System/img/menuCustomer.jpg)
+![](/PAO_Hotel-Management-System/img/menuCustomer.png)
 
 
 |      Admin       |     Customer      |
