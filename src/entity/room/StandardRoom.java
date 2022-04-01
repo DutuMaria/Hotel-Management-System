@@ -22,7 +22,7 @@ public class StandardRoom extends Room {
 
     @Override
     public String toString() {
-        return "\nStandardRoom{" +
+        return "StandardRoom{" +
                 "roomNumber=" + roomNumber +
                 ", roomStatus=" + roomStatus +
                 ", roomType=" + roomType +

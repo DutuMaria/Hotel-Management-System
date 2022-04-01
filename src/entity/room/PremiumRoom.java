@@ -22,7 +22,7 @@ public class PremiumRoom extends Room{
 
     @Override
     public String toString() {
-        return "\nPremiumRoom{" +
+        return "PremiumRoom{" +
                 "roomNumber=" + roomNumber +
                 ", roomStatus=" + roomStatus +
                 ", roomType=" + roomType +

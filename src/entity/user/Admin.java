@@ -121,6 +121,8 @@ public class Admin extends User {
         System.out.println(hotel.getRoomList());
     }
 
+    public void viewAllPayments(){ System.out.println(hotel.getPaymentList()); }
+
     public void viewAllCustomers(){
         System.out.println(hotel.getCustomerList());
     }

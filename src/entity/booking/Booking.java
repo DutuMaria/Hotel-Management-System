@@ -83,14 +83,23 @@ public class Booking {
 
     @Override
     public String toString() {
-        return "Booking{" +
-                "id=" + id +
-//                ", customer=" + customer +
-                ", roomSet=" + roomSet +
-                ", arrival=" + arrival +
-                ", departure=" + departure +
-                ", payment=" + payment +
-                '}';
+        StringBuilder booking = new StringBuilder("\n\t\t\tBooking " +
+                id + ": \n" +
+                "\t\t\t\tCustomer id: " + this.getCustomer().getId() + '\n' +
+                "\t\t\t\tArrival date: " + arrival + '\n' +
+                "\t\t\t\tDeparture date: " + departure + '\n' +
+                "\t\t\t\tPayment: " + payment + '\n');
+
+
+        if (!roomSet.isEmpty()) {
+            booking.append("\t\t\t\tRooms: ");
+            for (Room room : roomSet) {
+                booking.append("\n\t\t\t\t\t=> ").append(room);
+            }
+        } else{
+            booking.append("\t\t\t\tRooms: []\n");
+        }
+        return booking.toString();
     }
 }
 

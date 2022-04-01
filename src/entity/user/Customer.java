@@ -21,8 +21,8 @@ public class Customer extends User  {
     private UserDocument userDocument;
     private String address;
     private String telephone;
-    Set<Booking> bookingSet;
-    Set<Payment> paymentSet;
+    private Set<Booking> bookingSet;
+    private Set<Payment> paymentSet;
 
     public Customer(String firstName, String lastName, UserDocument userDocument, String address, String telephone, String username, String password, String email) {
         super(count, firstName, lastName, username, password, email);
@@ -289,7 +289,7 @@ public class Customer extends User  {
 
     @Override
     public String toString() {
-        StringBuilder customer = new StringBuilder("\n\t ==> Customer " +
+        StringBuilder customer = new StringBuilder("\n\n\t ==> Customer " +
                 this.getId() + ": " + this.getFullName() + '\n' +
                 "\t\tuserDocument: " + userDocument + '\n' +
                 "\t\taddress: " + address + '\n' +
@@ -300,16 +300,16 @@ public class Customer extends User  {
 
 
         if (!bookingSet.isEmpty()) {
-            customer.append("\t\tBookingSet: ");
+            customer.append("\t\tBookings: ");
             for (Booking booking : bookingSet) {
-                customer.append("\n\t\t\t=> ").append(booking);
+                customer.append(booking).append("\n");
             }
         } else{
             customer.append("\t\tBookings: []\n");
         }
 
         if (!paymentSet.isEmpty()) {
-            customer.append("\n\t\tPaymentSet: ");
+            customer.append("\n\t\tPayments: ");
             for (Payment payment : paymentSet) {
                 customer.append("\n\t\t\t=> ").append(payment);
             }

@@ -1,7 +1,7 @@
 # :bellhop_bell: Hotel Management System
 
 ## About
-This project implements the basics necessities of a real hotel, managing customers and rooms.
+This project implements the basics necessities of a real hotel, managing customers, rooms, bookings, payments and reviews.
 
 ### Functionalities:
 
@@ -16,11 +16,12 @@ This project implements the basics necessities of a real hotel, managing custome
 |   addCustomer    |    viewProfile    |
 |     addRoom      | viewHotelServices |
 | viewAllBookings  |   createBooking   |
-|   viewAllRooms   |    payBooking     |
-| viewAllCustomers |  changePassword   |
-| changeRoomStatus |  changeUsername   |
-|  changeRoomType  |    reviewHotel    |
-|    deleteRoom    |     checkOut      |
+| viewAllPayments  |    payBooking     | 
+|   viewAllRooms   |  changePassword   | 
+| viewAllCustomers |  changeUsername   |
+| changeRoomStatus |    reviewHotel    |
+|  changeRoomType  |     checkOut      |
+|    deleteRoom    |                   |
 
 #### LogIn
 ![](/img/login.png)

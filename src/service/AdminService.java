@@ -46,18 +46,19 @@ public class AdminService implements ServiceInterface {
     @Override
     public void showFunctionalities(User user) {
         int option = 0;
-        while (option != 9){
+        while (option != 10){
             System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
-            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
+            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10):");
             System.out.println("\t 1. View all bookings.");
-            System.out.println("\t 2. View all customers.");
-            System.out.println("\t 3. View all rooms.");
-            System.out.println("\t 4. Add customer.");
-            System.out.println("\t 5. Add room.");
-            System.out.println("\t 6. Delete room.");
-            System.out.println("\t 7. Change room status.");
-            System.out.println("\t 8. Change room type.");
-            System.out.println("\t 9. Exit.\n");
+            System.out.println("\t 2. View all payments.");
+            System.out.println("\t 3. View all customers.");
+            System.out.println("\t 4. View all rooms.");
+            System.out.println("\t 5. Add customer.");
+            System.out.println("\t 6. Add room.");
+            System.out.println("\t 7. Delete room.");
+            System.out.println("\t 8. Change room status.");
+            System.out.println("\t 9. Change room type.");
+            System.out.println("\t 10. Exit.\n");
 
             Scanner scanner = new Scanner(System.in);
             option = scanner.nextInt();
@@ -67,24 +68,27 @@ public class AdminService implements ServiceInterface {
                     ((Admin) user).viewAllBookings();
                     break;
                 case (2):
-                    ((Admin) user).viewAllCustomers();
+                    ((Admin) user).viewAllPayments();
                     break;
                 case (3):
-                    ((Admin) user).viewAllRooms();
+                    ((Admin) user).viewAllCustomers();
                     break;
                 case (4):
-                    ((Admin) user).addCustomer();
+                    ((Admin) user).viewAllRooms();
                     break;
                 case (5):
-                    ((Admin) user).addRoom();
+                    ((Admin) user).addCustomer();
                     break;
                 case (6):
+                    ((Admin) user).addRoom();
+                    break;
+                case (7):
                     int roomNr;
                     System.out.println("\t Enter room number: ");
                     roomNr = scanner.nextInt();
                     ((Admin) user).deleteRoom(roomNr);
                     break;
-                case (7):
+                case (8):
                     System.out.println("\t Enter room number: ");
                     roomNr = scanner.nextInt();
                     int roomStatus;
@@ -98,7 +102,7 @@ public class AdminService implements ServiceInterface {
                         ((Admin) user).changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
                     }
                     break;
-                case (8):
+                case (9):
                     System.out.println("\t Enter room number: ");
                     roomNr = scanner.nextInt();
                     int roomType;

@@ -71,8 +71,8 @@ public class Main {
         payment1.setPaymentMethod(PaymentMethod.CARD);
         payment1.setPaymentStatus(PaymentStatus.PAID);
         payment1.setTime(LocalDateTime.now());
-        Customer customerX = booking1.getCustomer();
-        customerX.getPaymentSet().add(payment1);
+        hotel.getPaymentList().add(payment1);
+        customer1.getPaymentSet().add(payment1);
 
         Set<Room> roomSet2 = new HashSet<>();
         roomSet2.add(room2);
@@ -80,9 +80,12 @@ public class Main {
         room2.setRoomStatus(RoomStatus.UNAVAILABLE);
         hotel.getBookingList().add(booking2);
         customer1.getBookingSet().add(booking2);
+        Payment payment2 = new Payment(2, booking2);
+        hotel.getPaymentList().add(payment2);
+        customer1.getPaymentSet().add(payment2);
 
         Set<Room> roomSet3 = new HashSet<>();
-        roomSet2.add(room3);
+        roomSet3.add(room3);
         Booking booking3 = new Booking(customer2, roomSet3, LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 12));
         room3.setRoomStatus(RoomStatus.UNAVAILABLE);
         hotel.getBookingList().add(booking3);
@@ -94,6 +97,7 @@ public class Main {
         payment3.setTime(LocalDateTime.now());
         Customer customerY = booking3.getCustomer();
         customerY.getPaymentSet().add(payment3);
+        hotel.getPaymentList().add(payment3);
 
 //     Cele de mai sus sunt date hardcodate
 
