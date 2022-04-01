@@ -29,7 +29,7 @@ This project implements the basics necessities of a real hotel, managing custome
 ![](/img/menuAdmin.png)
 
 #### Customer menu
-![](/img/menuCustomer.png)
+
 
 
 ------------------------------
