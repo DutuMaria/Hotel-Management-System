@@ -241,18 +241,49 @@ public class Customer extends User  {
         }
     };
 
+    public void changeUsername(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Type your password: ");
+        String password = scanner.nextLine();
+        boolean usernameChanged = false;
+
+        if (password.equals(this.getPassword())){
+            while(!usernameChanged){
+                System.out.println("Type new username: ");
+                String newUsername = scanner.nextLine();
+                if (!newUsername.equals(this.getUsername())){
+                    this.setUsername(newUsername);
+                    usernameChanged = true;
+                    System.out.println("Username has been successfully changed!");
+                } else {
+                    System.out.println("New username cannot be the same as your old username.");
+                }
+            }
+        } else {
+            System.out.println("Incorrect password! You can't change your username.");
+        }
+    }
+
     public void changePassword(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Type current password: ");
         String currentPassword = scanner.nextLine();
+        boolean passwordChanged = false;
 
         if (currentPassword.equals(this.getPassword())){
-            System.out.println("Type new password: ");
-            String newPassword = scanner.nextLine();
-            this.setPassword(newPassword);
-            System.out.println("Password changed.");
+            while(!passwordChanged){
+                System.out.println("Type new password: ");
+                String newPassword = scanner.nextLine();
+                if (!newPassword.equals(currentPassword)){
+                    this.setPassword(newPassword);
+                    passwordChanged = true;
+                    System.out.println("Password has been successfully changed!");
+                } else {
+                    System.out.println("New password cannot be the same as your old password.");
+                }
+            }
         } else {
-            System.out.println("Incorrect password.");
+            System.out.println("Incorrect password! You can't change your password.");
         }
     }
 

@@ -1,7 +1,6 @@
 package service;
 
 import entity.hotel.Hotel;
-import service.ServiceInterface;
 import entity.user.Customer;
 import entity.user.User;
 
@@ -48,17 +47,18 @@ public class CustomerService implements ServiceInterface {
     @Override
     public void showFunctionalities(User user) {
         int option = 0;
-        while (option != 8){
+        while (option != 9){
             System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
             System.out.println("\t Choose a functionality (1/2/3/4/5/6):");
             System.out.println("\t 1. View profile.");
             System.out.println("\t 2. View hotel services.");
             System.out.println("\t 3. Create a booking.");
             System.out.println("\t 4. Pay a booking.");
-            System.out.println("\t 5. Change your password.");
-            System.out.println("\t 6. Review Hotel.");
-            System.out.println("\t 7. Check-out.");
-            System.out.println("\t 8. Exit.\n");
+            System.out.println("\t 5. Change your username.");
+            System.out.println("\t 6. Change your password.");
+            System.out.println("\t 7. Review Hotel.");
+            System.out.println("\t 8. Check-out.");
+            System.out.println("\t 9. Exit.\n");
 
             Scanner scanner = new Scanner(System.in);
             option = scanner.nextInt();
@@ -79,12 +79,15 @@ public class CustomerService implements ServiceInterface {
                     ((Customer)user).payBooking(id);
                     break;
                 case (5):
-                    ((Customer)user).changePassword();
+                    ((Customer)user).changeUsername();
                     break;
                 case (6):
-                    ((Customer)user).reviewHotel();
+                    ((Customer)user).changePassword();
                     break;
                 case (7):
+                    ((Customer)user).reviewHotel();
+                    break;
+                case (8):
                     System.out.println("Type a booking id (number): ");
                     id = scanner.nextInt();
                     ((Customer)user).checkOut(id);

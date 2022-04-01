@@ -1,7 +1,7 @@
 # :bellhop_bell: Hotel Management System
 
 ## About
-This project implements the basics necessities of a real hotel, receiving guests and managing rooms.
+This project implements the basics necessities of a real hotel, managing customers and rooms.
 
 ### Functionalities:
 
@@ -11,6 +11,14 @@ This project implements the basics necessities of a real hotel, receiving guests
 |       logOut        |       logOut        |
 | showFunctionalities | showFunctionalities |
 
+#### LogIn
+![](/PAO_Hotel-Management-System/img/login.jpg)
+
+#### Admin menu
+![](/PAO_Hotel-Management-System/img/menuAdmin.jpg)
+
+#### Customer menu
+![](/PAO_Hotel-Management-System/img/menuCustomer.jpg)
 
 
 |      Admin       |     Customer      |
@@ -28,6 +36,7 @@ This project implements the basics necessities of a real hotel, receiving guests
     - changeRoomStatus (UNAVAILABLE <-> AVAILABLE)
     - changeRoomType (Single <-> Double)
     - checkOut (unavailable room => available room)
+    - checkIn // TODO?
 
 
 ### Objects:

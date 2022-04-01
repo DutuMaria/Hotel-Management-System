@@ -22,6 +22,7 @@ public class Main {
         AdminService adminService = AdminService.getAdminServiceInstance();
         CustomerService customerService = CustomerService.getCustomerServiceInstance();
 
+//        Date hardcodate
         Customer customer1 = new Customer("Mara", "Popescu", UserDocument.ID, "Romania-Bucharest", "0735654755", "maraPopescu", "maraPopescu@123", "marapopescu@gmail.com");
         Customer customer2 = new Customer("Mihai", "Stoica", UserDocument.PASSPORT, "Romania-Bucharest", "0732251755", "mihaiStoica", "mihaiStoica@123", "mihaiStoica@gmail.com");
         Customer customer3 = new Customer("Andreea", "Ilie", UserDocument.ID, "Romania-Bucharest", "0755454721", "andreeaIlie", "andreeaIlie@123", "andreeaIlie@gmail.com");
@@ -67,6 +68,9 @@ public class Main {
         customer1.getBookingSet().add(booking1);
 
         Payment payment1 = new Payment(1,booking1);
+        payment1.setPaymentMethod(PaymentMethod.CARD);
+        payment1.setPaymentStatus(PaymentStatus.PAID);
+        payment1.setTime(LocalDateTime.now());
         Customer customerX = booking1.getCustomer();
         customerX.getPaymentSet().add(payment1);
 
@@ -90,6 +94,8 @@ public class Main {
         payment3.setTime(LocalDateTime.now());
         Customer customerY = booking3.getCustomer();
         customerY.getPaymentSet().add(payment3);
+
+//     Cele de mai sus sunt date hardcodate
 
         System.out.println("\n\t -------------------- LOGIN --------------------");
         System.out.println("\t Choose your account type (1/2/3):");
