@@ -119,7 +119,7 @@ public class Main {
                 break;
             } else if(option == 3){
                 //Register
-                admin.addCustomer();
+                adminService.addCustomer();
                 customerService.logIn();
                 customerService.logOut();
                 break;

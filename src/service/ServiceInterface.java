@@ -1,10 +1,8 @@
 package service;
 
-import entity.user.User;
-
 public interface ServiceInterface {
     void logIn();
-    void showFunctionalities(User user);
+    void showFunctionalities(String username);
     default void logOut(){
         System.out.println("Goodbye!");
     }

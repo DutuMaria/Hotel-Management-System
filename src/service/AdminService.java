@@ -1,22 +1,134 @@
 package service;
 
-import entity.room.RoomStatus;
-import entity.room.RoomType;
-import service.ServiceInterface;
+import entity.hotel.Hotel;
+import entity.room.*;
 import entity.user.Admin;
-import entity.user.User;
-
+import entity.user.Customer;
+import entity.user.UserDocument;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class AdminService implements ServiceInterface {
     private static AdminService adminService;
+    private static Hotel hotel;
 
-    private AdminService(){}
+    private AdminService(){ hotel = Hotel.getHotelInstance(); }
 
     public static AdminService getAdminServiceInstance(){
         if (adminService == null)
             adminService = new AdminService();
         return adminService;
+    }
+
+    public void addRoom(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Complete the following information in order to add a room!");
+        System.out.println("If you want to add a Standard Room => type 1");
+        System.out.println("If you want to add a Premium Room => type 2");
+        String roomModelNr = scanner.nextLine();
+        System.out.println("If room is Single => type 1");
+        System.out.println("If room is Double => type 2");
+        String roomTypeNr = scanner.nextLine();
+
+        if (Objects.equals(roomModelNr, "1")) {
+            if (Objects.equals(roomTypeNr, "1")) {
+                StandardRoom standardRoom = new StandardRoom(RoomType.SINGLE);
+                hotel.getRoomList().add(standardRoom);
+            } else if (Objects.equals(roomTypeNr, "2")){
+                StandardRoom standardRoom = new StandardRoom(RoomType.DOUBLE);
+                hotel.getRoomList().add(standardRoom);
+            } else {
+                System.out.println("Wrong input for (Single/Double) room!");
+            }
+        } else if (Objects.equals(roomModelNr, "2")){
+            if (Objects.equals(roomTypeNr, "1")) {
+                PremiumRoom premiumRoom = new PremiumRoom(RoomType.SINGLE);
+                hotel.getRoomList().add(premiumRoom);
+            } else if (Objects.equals(roomTypeNr, "2")){
+                PremiumRoom premiumRoom = new PremiumRoom(RoomType.DOUBLE);
+                hotel.getRoomList().add(premiumRoom);
+            } else {
+                System.out.println("Wrong input for (Single/Double) room!");
+            }
+        } else {
+            System.out.println("Wrong input for (Standard/Premium) room!");
+        }
+    }
+
+    public void addCustomer(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Complete the following information in order to register!");
+        System.out.println("First Name: ");
+        String firstName = scanner.nextLine();
+        System.out.println("Last Name: ");
+        String lastName = scanner.nextLine();
+        System.out.println("If you register with ID => type 1");
+        System.out.println("If you register with Passport => type 2");
+        String userDocumentNr = scanner.nextLine();
+        UserDocument userDocument;
+
+        switch (userDocumentNr){
+            case ("1"):
+                userDocument = UserDocument.ID;
+                break;
+            case ("2"):
+                userDocument = UserDocument.PASSPORT;
+                break;
+            default:
+                System.out.println("Wrong input for userDocument");
+                //userDocument = UserDocument.ID;
+                return;
+        }
+
+        System.out.println("Address: ");
+        String address = scanner.nextLine();
+        System.out.println("Telephone: ");
+        String telephone = scanner.nextLine();
+        System.out.println("Username: ");
+        String username = scanner.nextLine();
+        System.out.println("Password: ");
+        String password = scanner.nextLine();
+        System.out.println("Email: ");
+        String email = scanner.nextLine();
+
+        Customer customer = new Customer(firstName, lastName, userDocument, address, telephone, username, password, email);
+        hotel.getCustomerList().add(customer);
+    }
+
+    public void viewAllBookings(){ System.out.println(hotel.getBookingList()); }
+
+    public void viewAllRooms(){
+        RoomTypeComparator roomTypeComparator = new RoomTypeComparator();
+        hotel.getRoomList().sort(roomTypeComparator);
+        System.out.println(hotel.getRoomList());
+    }
+
+    public void viewAllPayments(){ System.out.println(hotel.getPaymentList()); }
+
+    public void viewAllCustomers(){
+        System.out.println(hotel.getCustomerList());
+    }
+
+    public void changeRoomStatus(int roomNumber, RoomStatus roomStatus){
+        for (Room room :hotel.getRoomList()){
+            if (room.getRoomNumber() == roomNumber && room.getRoomStatus() != roomStatus){
+                room.setRoomStatus(roomStatus);
+            }
+        }
+    }
+
+    public void changeRoomType(int roomNumber, RoomType roomType){
+        for (Room room :hotel.getRoomList()){
+            if (room.getRoomNumber() == roomNumber && room.getRoomType() != roomType){
+                room.setRoomType(roomType);
+            }
+        }
+    }
+
+    public void deleteRoom(int roomNumber){
+        // TODO: verificare daca aceasta camera are booking-uri asociate => in viitor => schimbi respectivul booking, daca este posibil
+        //                                                               => in prezent => nu poti sterge camera
+        hotel.getRoomList().removeIf(x-> x.getRoomNumber() == roomNumber);
     }
 
     @Override
@@ -31,7 +143,7 @@ public class AdminService implements ServiceInterface {
             String password = scanner.nextLine();
 
             if (username.equals(admin.getUsername()) && password.equals(admin.getPassword())){
-                showFunctionalities(admin);
+                showFunctionalities(username);
                 return;
             }
             nrOfAttempts--;
@@ -44,7 +156,7 @@ public class AdminService implements ServiceInterface {
     }
 
     @Override
-    public void showFunctionalities(User user) {
+    public void showFunctionalities(String username) {
         int option = 0;
         while (option != 10){
             System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
@@ -65,28 +177,28 @@ public class AdminService implements ServiceInterface {
 
             switch (option){
                 case (1):
-                    ((Admin) user).viewAllBookings();
+                    viewAllBookings();
                     break;
                 case (2):
-                    ((Admin) user).viewAllPayments();
+                    viewAllPayments();
                     break;
                 case (3):
-                    ((Admin) user).viewAllCustomers();
+                    viewAllCustomers();
                     break;
                 case (4):
-                    ((Admin) user).viewAllRooms();
+                    viewAllRooms();
                     break;
                 case (5):
-                    ((Admin) user).addCustomer();
+                    addCustomer();
                     break;
                 case (6):
-                    ((Admin) user).addRoom();
+                    addRoom();
                     break;
                 case (7):
                     int roomNr;
                     System.out.println("\t Enter room number: ");
                     roomNr = scanner.nextInt();
-                    ((Admin) user).deleteRoom(roomNr);
+                    deleteRoom(roomNr);
                     break;
                 case (8):
                     System.out.println("\t Enter room number: ");
@@ -96,10 +208,10 @@ public class AdminService implements ServiceInterface {
                     System.out.println("\t If you want to make the room AVAILABLE => type 1 ");
                     roomStatus = scanner.nextInt();
                     if (roomStatus == 0){
-                        ((Admin) user).changeRoomStatus(roomNr, RoomStatus.UNAVAILABLE);
+                        changeRoomStatus(roomNr, RoomStatus.UNAVAILABLE);
                     }
                     if (roomStatus == 1){
-                        ((Admin) user).changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
+                        changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
                     }
                     break;
                 case (9):
@@ -110,10 +222,10 @@ public class AdminService implements ServiceInterface {
                     System.out.println("\t If you want to make the room Double => type 2");
                     roomType = scanner.nextInt();
                     if (roomType == 1){
-                        ((Admin) user).changeRoomType(roomNr, RoomType.SINGLE);
+                        changeRoomType(roomNr, RoomType.SINGLE);
                     }
                     if (roomType == 2){
-                        ((Admin) user).changeRoomType(roomNr, RoomType.DOUBLE);
+                        changeRoomType(roomNr, RoomType.DOUBLE);
                     }
                     break;
             }
