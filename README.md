@@ -10,18 +10,15 @@ This project implements the basic necessities of a real hotel => managing custom
 |        logIn        |        logIn        |
 |       logOut        |       logOut        |    
 | showFunctionalities | showFunctionalities |
-
-|      Admin       |     Customer      |
-|:----------------:|:-----------------:|
-|   addCustomer    |    viewProfile    |
-|     addRoom      | viewHotelServices |
-| viewAllBookings  |   createBooking   |
-| viewAllPayments  |    payBooking     | 
-|   viewAllRooms   |  changePassword   | 
-| viewAllCustomers |  changeUsername   |
-| changeRoomStatus |    reviewHotel    |
-|  changeRoomType  |     checkOut      |
-|    deleteRoom    |                   |
+|     addCustomer     |     viewProfile     |
+|       addRoom       |  viewHotelServices  |
+|   viewAllBookings   |    createBooking    |
+|   viewAllPayments   |     payBooking      | 
+|    viewAllRooms     |   changePassword    | 
+|  viewAllCustomers   |   changeUsername    |
+|  changeRoomStatus   |     reviewHotel     |
+|   changeRoomType    |      checkOut       |
+|     deleteRoom      |                     |
 
 #### LogIn
 ![](/img/login.png)
