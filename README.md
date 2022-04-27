@@ -1,67 +1,76 @@
 # :bellhop_bell: Hotel Management System
 
+## About
+This project implements the basic necessities of a real hotel => managing customers, rooms, bookings, payments and reviews.
+
 ### Functionalities:
 
-- AdminService
-    - logIn
-    - logOut
-    - showFunctionalities
+|    AdminService     |   CustomerService   |
+|:-------------------:|:-------------------:|
+|        logIn        |        logIn        |
+|       logOut        |       logOut        |    
+| showFunctionalities | showFunctionalities |
+|     addCustomer     |     viewProfile     |
+|       addRoom       |  viewHotelServices  |
+|   viewAllBookings   |    createBooking    |
+|   viewAllPayments   |     payBooking      | 
+|    viewAllRooms     |   changePassword    | 
+|  viewAllCustomers   |   changeUsername    |
+|  changeRoomStatus   |     reviewHotel     |
+|   changeRoomType    |      checkOut       |
+|     deleteRoom      |                     |
 
-- CustomerService
-    - logIn
-    - logOut
-    - showFunctionalities
+#### LogIn
+![](/img/login.png)
 
-- Admin
-    - addCustomer
-    - addRoom
-    - viewAllBookings
-    - viewAllRooms
-    - viewAllCustomers
-    - chageRoomStatus (UNAVAILABLE <-> AVAILABLE)
+#### Admin menu
+![](/img/menuAdmin.png)
+
+#### Customer menu
+![](/img/menuCustomer.png)
+
+
+------------------------------
+    - changeRoomStatus (UNAVAILABLE <-> AVAILABLE)
     - changeRoomType (Single <-> Double)
-    - deleteRoom
-  --------------
-    - based on dates //TODO
-
-- Customer
-    - createBooking
-    - viewProfile
-    - viewHotelServices
-    - payBooking
-    - editProfile => changePassword for now
     - checkOut (unavailable room => available room)
-  --------------
-    - check //TODO
-    - deleteBooking //TODO
+    - checkIn // TODO?
 
-- Booking
-    - calculatePayment
 
 ### Objects:
-- Hotel => singleton
-    - HotelServices (enum)
-- User => abstract class
-    - Customer
-    - Admin => singleton
-    - UserDocument (enum)
-- Booking
-- Payment
-    - PaymentMethod (enum)
-    - PaymentStatus (enum)
-- Room
-    - StandardRoom
-    - PremiumRoom
-    - RoomType (enum)
-    - RoomStatus (enum)
-    - RoomTypeComparator => implements Comparator
-- AdminService => singleton => implements interfcae
-- CustomerService => singleton => implements interface
-- ServiceInterface (interface)
-- Main
--------------
-- Check //TODO
-- Staff //TODO
+1) Hotel
+2) Customer
+3) Admin
+4) Review
+5) Booking
+6) Payment
+7) StandardRoom
+8) PremiumRoom
+
+--------------------------------
+    - Hotel => singleton
+        -> HotelServices (enum)
+    - User => abstract class
+        -> Customer => extends User
+        -> Admin => singleton => extends User
+        -> UserDocument (enum)
+    - Review
+    - Booking
+    - Payment
+        -> PaymentMethod (enum)
+        -> PaymentStatus (enum)
+    - Room => abstract class
+        -> StandardRoom => extends Room
+        -> PremiumRoom => extends Room
+        -> RoomType (enum)
+        -> RoomStatus (enum)
+        -> RoomTypeComparator => implements Comparator
+
+    - AdminService => singleton => implements ServiceInterface
+    - CustomerService => singleton => implements ServiceInterface
+    - ServiceInterface (interface)
+    - Main
+
 
 ## Cerințe:
 Fiecare student va lucra la un proiect individual. Proiectul este structurat în mai multe etape.
