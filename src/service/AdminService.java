@@ -5,14 +5,20 @@ import entity.room.*;
 import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
+
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class AdminService implements ServiceInterface {
     private static AdminService adminService;
     private static Hotel hotel;
+    private static AuditService auditService;
 
-    private AdminService(){ hotel = Hotel.getHotelInstance(); }
+    private AdminService(){
+        hotel = Hotel.getHotelInstance();
+        auditService = AuditService.getAuditService();
+    }
 
     public static AdminService getAdminServiceInstance(){
         if (adminService == null)
@@ -20,9 +26,12 @@ public class AdminService implements ServiceInterface {
         return adminService;
     }
 
-    public void addRoom(){
+    public void addRoom() throws IOException {
+        auditService.writeAction("addRoom");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Complete the following information in order to add a room!");
+        System.out.println("Type a room number: ");
+        Integer roomNumber = Integer.parseInt(scanner.nextLine());
         System.out.println("If you want to add a Standard Room => type 1");
         System.out.println("If you want to add a Premium Room => type 2");
         String roomModelNr = scanner.nextLine();
@@ -32,20 +41,20 @@ public class AdminService implements ServiceInterface {
 
         if (Objects.equals(roomModelNr, "1")) {
             if (Objects.equals(roomTypeNr, "1")) {
-                StandardRoom standardRoom = new StandardRoom(RoomType.SINGLE);
+                StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(standardRoom);
             } else if (Objects.equals(roomTypeNr, "2")){
-                StandardRoom standardRoom = new StandardRoom(RoomType.DOUBLE);
+                StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(standardRoom);
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
         } else if (Objects.equals(roomModelNr, "2")){
             if (Objects.equals(roomTypeNr, "1")) {
-                PremiumRoom premiumRoom = new PremiumRoom(RoomType.SINGLE);
+                PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(premiumRoom);
             } else if (Objects.equals(roomTypeNr, "2")){
-                PremiumRoom premiumRoom = new PremiumRoom(RoomType.DOUBLE);
+                PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(premiumRoom);
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
@@ -55,7 +64,8 @@ public class AdminService implements ServiceInterface {
         }
     }
 
-    public void addCustomer(){
+    public void addCustomer() throws IOException {
+        auditService.writeAction("addCustomer");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Complete the following information in order to register!");
         System.out.println("First Name: ");
@@ -95,44 +105,60 @@ public class AdminService implements ServiceInterface {
         hotel.getCustomerList().add(customer);
     }
 
-    public void viewAllBookings(){ System.out.println(hotel.getBookingList()); }
+    public void viewAllBookings() throws IOException {
+        auditService.writeAction("viewAllBookings");
+        System.out.println(hotel.getBookingList());
+    }
 
-    public void viewAllRooms(){
+    public void viewAllRooms() throws IOException {
+        auditService.writeAction("viewAllRooms");
         RoomTypeComparator roomTypeComparator = new RoomTypeComparator();
         hotel.getRoomList().sort(roomTypeComparator);
         System.out.println(hotel.getRoomList());
     }
 
-    public void viewAllPayments(){ System.out.println(hotel.getPaymentList()); }
+    public void viewAllPayments() throws IOException {
+        auditService.writeAction("viewAllPayments");
+        System.out.println(hotel.getPaymentList());
+    }
 
-    public void viewAllCustomers(){
+    public void viewAllCustomers() throws IOException {
+        auditService.writeAction("viewAllCustomers");
         System.out.println(hotel.getCustomerList());
     }
 
-    public void changeRoomStatus(int roomNumber, RoomStatus roomStatus){
+    public void changeRoomStatus(int roomNumber, RoomStatus roomStatus) throws IOException {
+        auditService.writeAction("changeRoomStatus");
+
         for (Room room :hotel.getRoomList()){
             if (room.getRoomNumber() == roomNumber && room.getRoomStatus() != roomStatus){
                 room.setRoomStatus(roomStatus);
+                break;
             }
         }
     }
 
-    public void changeRoomType(int roomNumber, RoomType roomType){
+    public void changeRoomType(int roomNumber, RoomType roomType) throws IOException {
+        auditService.writeAction("changeRoomType");
+
         for (Room room :hotel.getRoomList()){
             if (room.getRoomNumber() == roomNumber && room.getRoomType() != roomType){
                 room.setRoomType(roomType);
+                break;
             }
         }
     }
 
-    public void deleteRoom(int roomNumber){
+    public void deleteRoom(int roomNumber) throws IOException {
+        auditService.writeAction("deleteRoom");
         // TODO: verificare daca aceasta camera are booking-uri asociate => in viitor => schimbi respectivul booking, daca este posibil
         //                                                               => in prezent => nu poti sterge camera
         hotel.getRoomList().removeIf(x-> x.getRoomNumber() == roomNumber);
     }
 
     @Override
-    public void logIn() {
+    public void logIn() throws IOException {
+        auditService.writeAction("logIn");
         Admin admin = Admin.getAdminInstance();
         int nrOfAttempts = 5;
         while (nrOfAttempts > 0){
@@ -156,7 +182,8 @@ public class AdminService implements ServiceInterface {
     }
 
     @Override
-    public void showFunctionalities(String username) {
+    public void showFunctionalities(String username) throws IOException {
+        auditService.writeAction("menu");
         int option = 0;
         while (option != 10){
             System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");

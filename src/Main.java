@@ -10,12 +10,13 @@ import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         Hotel hotel = Hotel.getHotelInstance();
         Admin admin = Admin.getAdminInstance();
@@ -33,16 +34,16 @@ public class Main {
         customerList.add(customer3);
         hotel.setCustomerList(customerList);
 
-        StandardRoom room1 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room2 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room3 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room4 = new StandardRoom(RoomType.DOUBLE);
-        StandardRoom room5 = new StandardRoom(RoomType.DOUBLE);
-        StandardRoom room6 = new StandardRoom(RoomType.DOUBLE);
-        PremiumRoom room7 = new PremiumRoom(RoomType.SINGLE);
-        PremiumRoom room8 = new PremiumRoom(RoomType.SINGLE);
-        PremiumRoom room9 = new PremiumRoom(RoomType.DOUBLE);
-        PremiumRoom room10 = new PremiumRoom(RoomType.DOUBLE);
+        StandardRoom room1 = new StandardRoom(301, RoomType.SINGLE);
+        StandardRoom room2 = new StandardRoom(302, RoomType.SINGLE);
+        StandardRoom room3 = new StandardRoom(303, RoomType.SINGLE);
+        StandardRoom room4 = new StandardRoom(304, RoomType.DOUBLE);
+        StandardRoom room5 = new StandardRoom(305, RoomType.DOUBLE);
+        StandardRoom room6 = new StandardRoom(306, RoomType.DOUBLE);
+        PremiumRoom room7 = new PremiumRoom(307, RoomType.SINGLE);
+        PremiumRoom room8 = new PremiumRoom(308, RoomType.SINGLE);
+        PremiumRoom room9 = new PremiumRoom(309, RoomType.DOUBLE);
+        PremiumRoom room10 = new PremiumRoom(310, RoomType.DOUBLE);
 
         List<Room> roomList = new ArrayList<>();
         roomList.add(room1);
@@ -101,29 +102,30 @@ public class Main {
 
 //     Cele de mai sus sunt date hardcodate
 
-        System.out.println("\n\t -------------------- LOGIN --------------------");
-        System.out.println("\t Choose your account type (1/2/3):");
-        System.out.println("\t 1. Admin");
-        System.out.println("\t 2. Customer");
-        System.out.println("\t 3. I don't have an account. I want to register.");
+        while(true) {
 
-        while(true){
+            System.out.println("\n\t -------------------- LOGIN --------------------");
+            System.out.println("\t Choose your account type (1/2/3):");
+            System.out.println("\t 1. Admin");
+            System.out.println("\t 2. Customer");
+            System.out.println("\t 3. I don't have an account. I want to register.");
+            System.out.println("\t 4. Exit!");
+
             int option = scanner.nextInt();
             if (option == 1){
                 adminService.logIn();
                 adminService.logOut();
-                break;
-            } else if(option == 2){
+            } else if (option == 2){
                 customerService.logIn();
                 customerService.logOut();
-                break;
-            } else if(option == 3){
+            } else if (option == 3){
                 //Register
                 adminService.addCustomer();
                 customerService.logIn();
                 customerService.logOut();
+            } else if (option == 4) {
                 break;
-            } else{
+            } else {
                 System.out.println("Failed to LogIn! Try again!");
             }
         }

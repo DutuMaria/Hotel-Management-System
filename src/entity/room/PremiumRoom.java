@@ -3,8 +3,8 @@ package entity.room;
 public class PremiumRoom extends Room{
     private final static Double pricePremiumRoom = 15d;
 
-    public PremiumRoom(RoomType roomType) {
-        super(roomType);
+    public PremiumRoom(Integer roomNumber, RoomType roomType) {
+        super(roomNumber, roomType);
     }
 
     @Override

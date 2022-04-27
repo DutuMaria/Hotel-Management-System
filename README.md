@@ -94,12 +94,13 @@ Condiția de punctare a proiectelor:
 ### Etapa II (3 Mai):
 
 1. Extindeți proiectul din prima etapă prin realizarea persistenței utilizând fișiere.
-    - [ ] Se vor realiza fișiere de tip CSV pentru cel puțin 4 dintre clasele definite în prima etapă. Fiecare coloana din fișier este separata de virgula. Exemplu:nume,prenume,varsta
+    - [x] Se vor realiza fișiere de tip CSV pentru cel puțin 4 dintre clasele definite în prima etapă. Fiecare coloana din fișier este separata de virgula. Exemplu:nume,prenume,varsta
     - [ ] Se vor realiza servicii singleton generice pentru scrierea și citirea din fișiere
     - [ ] La pornirea programului se vor încărca datele din fișiere utilizând serviciile create
 2. Realizarea unui serviciu de audit
-    - [ ] Se va realiza un serviciu care să scrie într-un fișier de tip CSV de fiecare dată când este executata una dintre acțiunile descrise în prima etapă. Structura fișierului: nume_actiune, timestamp
-
+    - [x] Se va realiza un serviciu care să scrie într-un fișier de tip CSV de fiecare dată când este executata una dintre acțiunile descrise în prima etapă. Structura fișierului: nume_actiune, timestamp
+3. Exceptii
+   - [ ] Exceptii - optional
 ### Etapa III (31 Mai):
 - [ ] Înlocuiți serviciile realizate în etapă a II-a cu servicii care să asigure persistența utilizând baza de date folosind JDBC.
 - [ ] Să se realizeze servicii care să expună operații de tip create, read, update, delete pentru cel puțin 4 dintre clasele definite.

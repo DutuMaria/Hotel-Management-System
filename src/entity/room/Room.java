@@ -7,9 +7,9 @@ public abstract class Room{
     protected RoomStatus roomStatus;
     protected RoomType roomType;
 
-    public Room(RoomType roomType) {
+    public Room(Integer roomNumber, RoomType roomType) {
         count++;
-        this.roomNumber = count;
+        this.roomNumber = roomNumber;
         this.roomStatus = RoomStatus.AVAILABLE;
         this.roomType = roomType;
     }

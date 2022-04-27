@@ -14,7 +14,7 @@ public class Review {
     private String description;
     private LocalDate date;
 
-    public Review(int stars, int service, int rooms, int cleanliness, int sleepQuality, String description, LocalDate date) {
+    public Review(int stars, int service, int rooms, int cleanliness, int sleepQuality, String description) {
         count++;
         this.id = count;
         this.stars = stars;
@@ -23,7 +23,7 @@ public class Review {
         this.cleanliness = cleanliness;
         this.sleepQuality = sleepQuality;
         this.description = description;
-        this.date = date;
+        this.date = LocalDate.now();;
     }
 
     public Integer getId() {
