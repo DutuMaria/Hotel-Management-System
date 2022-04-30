@@ -17,7 +17,7 @@ public class Payment {
         this.totalPrice = booking.getPayment();
 //        this.paymentMethod = paymentMethod;
         this.booking = booking;
-        this.paymentStatus = PaymentStatus.NOT_PAID;
+        this.paymentStatus = PaymentStatus.UNPAID;
 //        this.time = time;
     }
 

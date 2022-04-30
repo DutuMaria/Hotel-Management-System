@@ -77,7 +77,7 @@ public class Main {
 
         Set<Room> roomSet2 = new HashSet<>();
         roomSet2.add(room2);
-        Booking booking2 = new Booking(customer1, roomSet2, LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 12));
+        Booking booking2 = new Booking(customer1, roomSet2, LocalDate.of(2022, 4, 16), LocalDate.of(2022, 4, 17));
         room2.setRoomStatus(RoomStatus.UNAVAILABLE);
         hotel.getBookingList().add(booking2);
         customer1.getBookingSet().add(booking2);
@@ -103,15 +103,23 @@ public class Main {
 //     Cele de mai sus sunt date hardcodate
 
         while(true) {
+            int option;
+            while (true){
+                try {
+                    System.out.println("\n\t -------------------- LOGIN --------------------");
+                    System.out.println("\t Choose your account type (1/2/3/4):");
+                    System.out.println("\t 1. Admin");
+                    System.out.println("\t 2. Customer");
+                    System.out.println("\t 3. I don't have an account. I want to register.");
+                    System.out.println("\t 4. Exit!");
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (NumberFormatException e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Try again!");
+                }
+            }
 
-            System.out.println("\n\t -------------------- LOGIN --------------------");
-            System.out.println("\t Choose your account type (1/2/3):");
-            System.out.println("\t 1. Admin");
-            System.out.println("\t 2. Customer");
-            System.out.println("\t 3. I don't have an account. I want to register.");
-            System.out.println("\t 4. Exit!");
-
-            int option = scanner.nextInt();
             if (option == 1){
                 adminService.logIn();
                 adminService.logOut();

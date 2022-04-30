@@ -53,9 +53,12 @@ public class CustomerService implements ServiceInterface {
     }
 
     public void viewAvailableRooms() throws IOException {
-        auditService.writeAction("viewAvailablesRooms");
+        auditService.writeAction("viewAvailableRooms");
         Hotel hotel = Hotel.getHotelInstance();
-        System.out.println(hotel.getRoomList().stream().filter(x -> x.getRoomStatus() == RoomStatus.AVAILABLE).collect(Collectors.toList()));
+        System.out.println(hotel.getRoomList()
+                .stream()
+                .filter(room -> room.getRoomStatus() == RoomStatus.AVAILABLE)
+                .collect(Collectors.toList()));
     }
 
 
@@ -134,7 +137,7 @@ public class CustomerService implements ServiceInterface {
                 Scanner scanner = new Scanner(System.in);
                 for (Payment payment: c.getPaymentSet()){
                     if (payment.getId().equals(id)){
-                        if (payment.getPaymentStatus() == PaymentStatus.NOT_PAID){
+                        if (payment.getPaymentStatus() == PaymentStatus.UNPAID){
                             System.out.println("Payment Number: " + id);
                             System.out.println("Total: " + payment.getTotalPrice() + "$");
                             System.out.println("Choose payment method: ");
@@ -336,23 +339,31 @@ public class CustomerService implements ServiceInterface {
 
     @Override
     public void showFunctionalities(String username) throws IOException {
-        auditService.writeAction("menu");
+        auditService.writeAction("showFunctionalities");
         int option = 0;
         while (option != 9){
-            System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
-            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
-            System.out.println("\t 1. View profile.");
-            System.out.println("\t 2. View hotel services.");
-            System.out.println("\t 3. Create a booking.");
-            System.out.println("\t 4. Pay a booking.");
-            System.out.println("\t 5. Change your username.");
-            System.out.println("\t 6. Change your password.");
-            System.out.println("\t 7. Review Hotel.");
-            System.out.println("\t 8. Check-out.");
-            System.out.println("\t 9. Exit.\n");
-
             Scanner scanner = new Scanner(System.in);
-            option = scanner.nextInt();
+
+            while (true){
+                try {
+                    System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
+                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
+                    System.out.println("\t 1. View profile.");
+                    System.out.println("\t 2. View hotel services.");
+                    System.out.println("\t 3. Create a booking.");
+                    System.out.println("\t 4. Pay a booking.");
+                    System.out.println("\t 5. Change your username.");
+                    System.out.println("\t 6. Change your password.");
+                    System.out.println("\t 7. Review Hotel.");
+                    System.out.println("\t 8. Check-out.");
+                    System.out.println("\t 9. Exit.\n");
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (NumberFormatException e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Try again!");
+                }
+            }
 
             switch (option){
                 case (1):
@@ -365,8 +376,18 @@ public class CustomerService implements ServiceInterface {
                     createBooking(username);
                     break;
                 case (4):
-                    System.out.println("Type a booking id (number): ");
-                    int id = scanner.nextInt();
+                    int id;
+                    while (true){
+                        try {
+                            System.out.println("Type a booking id (number): ");
+                            id = Integer.parseInt(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     payBooking(id, username);
                     break;
                 case (5):
@@ -379,8 +400,17 @@ public class CustomerService implements ServiceInterface {
                     reviewHotel(username);
                     break;
                 case (8):
-                    System.out.println("Type a booking id (number): ");
-                    id = scanner.nextInt();
+                    while (true){
+                        try {
+                            System.out.println("Type a booking id (number): ");
+                            id = Integer.parseInt(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     checkOut(id, username);
                     break;
             }
