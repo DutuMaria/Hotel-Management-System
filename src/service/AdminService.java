@@ -25,9 +25,12 @@ public class AdminService implements ServiceInterface {
     private static Hotel hotel;
     private static AuditService auditService;
 
+    private static WriteToFileService writeToFileService;
+
     private AdminService(){
         hotel = Hotel.getHotelInstance();
         auditService = AuditService.getAuditService();
+        writeToFileService = WriteToFileService.getWriteToFileService();
     }
 
     public static AdminService getAdminServiceInstance(){
@@ -70,9 +73,11 @@ public class AdminService implements ServiceInterface {
             if (Objects.equals(roomTypeNr, "1")) {
                 StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(standardRoom);
+                writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
             } else if (Objects.equals(roomTypeNr, "2")){
                 StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(standardRoom);
+                writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
@@ -80,9 +85,11 @@ public class AdminService implements ServiceInterface {
             if (Objects.equals(roomTypeNr, "1")) {
                 PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(premiumRoom);
+                writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
             } else if (Objects.equals(roomTypeNr, "2")){
                 PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(premiumRoom);
+                writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
@@ -153,6 +160,7 @@ public class AdminService implements ServiceInterface {
 
         Customer customer = new Customer(firstName, lastName, userDocument, address, telephone, username, password, email);
         hotel.getCustomerList().add(customer);
+        writeToFileService.writeUser(customer);
     }
 
     public void viewAllBookings() throws IOException {
@@ -196,6 +204,11 @@ public class AdminService implements ServiceInterface {
     public void viewAllCustomers() throws IOException {
         auditService.writeAction("viewAllCustomers");
         System.out.println(hotel.getCustomerList());
+    }
+
+    public void viewAllReviews() throws IOException {
+        auditService.writeAction("viewAllReviews");
+        System.out.println(hotel.getReviewList());
     }
 
     public void changeRoomStatus(int roomNumber, RoomStatus roomStatus) throws IOException {
@@ -276,19 +289,20 @@ public class AdminService implements ServiceInterface {
             while (true){
                 try {
                     System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
-                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10/11/12):");
+                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10/11/12/13):");
                     System.out.println("\t 1. View all bookings.");
                     System.out.println("\t 2. View bookings for a given period of time.");
                     System.out.println("\t 3. View all payments.");
                     System.out.println("\t 4. View unpaid payments.");
                     System.out.println("\t 5. View all customers.");
                     System.out.println("\t 6. View all rooms.");
-                    System.out.println("\t 7. Add customer.");
-                    System.out.println("\t 8. Add room.");
-                    System.out.println("\t 9. Delete room.");
-                    System.out.println("\t 10. Change room status.");
-                    System.out.println("\t 11. Change room type.");
-                    System.out.println("\t 12. Exit.\n");
+                    System.out.println("\t 7. View all reviews.");
+                    System.out.println("\t 8. Add customer.");
+                    System.out.println("\t 9. Add room.");
+                    System.out.println("\t 10. Delete room.");
+                    System.out.println("\t 11. Change room status.");
+                    System.out.println("\t 12. Change room type.");
+                    System.out.println("\t 13. Exit.\n");
                     option = Integer.parseInt(scanner.nextLine());
                     break;
                 } catch (NumberFormatException e){
@@ -340,12 +354,15 @@ public class AdminService implements ServiceInterface {
                     viewAllRooms();
                     break;
                 case (7):
-                    addCustomer();
+                    viewAllReviews();
                     break;
                 case (8):
-                    addRoom();
+                    addCustomer();
                     break;
                 case (9):
+                    addRoom();
+                    break;
+                case (10):
                     int roomNr;
                     while (true) {
                         try {
@@ -361,7 +378,7 @@ public class AdminService implements ServiceInterface {
 
                     deleteRoom(roomNr);
                     break;
-                case (10):
+                case (11):
                     while (true) {
                         try {
                             System.out.println("\t Enter room number: ");
@@ -397,7 +414,7 @@ public class AdminService implements ServiceInterface {
                         changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
                     }
                     break;
-                case (11):
+                case (12):
                     while (true) {
                         try {
                             System.out.println("\t Enter room number: ");

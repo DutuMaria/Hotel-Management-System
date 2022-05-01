@@ -26,7 +26,7 @@ public class PremiumRoom extends Room{
                 "roomNumber=" + roomNumber +
                 ", roomStatus=" + roomStatus +
                 ", roomType=" + roomType +
-                '}';
+                "}\n";
     }
 
 }

@@ -26,7 +26,7 @@ public class StandardRoom extends Room {
                 "roomNumber=" + roomNumber +
                 ", roomStatus=" + roomStatus +
                 ", roomType=" + roomType +
-                '}';
+                "}\n";
     }
 
 }

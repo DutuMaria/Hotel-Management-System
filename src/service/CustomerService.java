@@ -11,6 +11,7 @@ import entity.room.RoomStatus;
 import entity.user.Customer;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -22,8 +23,15 @@ public class CustomerService implements ServiceInterface {
     private static CustomerService customerService;
     private static AuditService auditService;
 
+    private static Hotel hotel;
+
+    private static WriteToFileService writeToFileService;
+
     private CustomerService(){
+
         auditService = AuditService.getAuditService();
+        hotel = Hotel.getHotelInstance();
+        writeToFileService = WriteToFileService.getWriteToFileService();
     }
 
     public static CustomerService getCustomerServiceInstance(){
@@ -34,7 +42,6 @@ public class CustomerService implements ServiceInterface {
 
     public void viewProfile(String username) throws IOException {
         auditService.writeAction("viewProfile");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -48,13 +55,11 @@ public class CustomerService implements ServiceInterface {
 
     public void viewHotelServices() throws IOException {
         auditService.writeAction("viewHotelServices");
-        Hotel hotel = Hotel.getHotelInstance();
         System.out.println(hotel.getHotelServices());
     }
 
     public void viewAvailableRooms() throws IOException {
         auditService.writeAction("viewAvailableRooms");
-        Hotel hotel = Hotel.getHotelInstance();
         System.out.println(hotel.getRoomList()
                 .stream()
                 .filter(room -> room.getRoomStatus() == RoomStatus.AVAILABLE)
@@ -64,7 +69,6 @@ public class CustomerService implements ServiceInterface {
 
     public void createBooking(String username) throws IOException {
         auditService.writeAction("createBooking");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -128,7 +132,6 @@ public class CustomerService implements ServiceInterface {
 
     public void payBooking(int id, String username) throws IOException {
         auditService.writeAction("payBooking");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -175,7 +178,6 @@ public class CustomerService implements ServiceInterface {
 
     public void reviewHotel(String username) throws IOException {
         auditService.writeAction("reviewHotel");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -199,6 +201,7 @@ public class CustomerService implements ServiceInterface {
                         Review review = new Review(stars, serviceRaiting, roomsRaiting, cleanlinessRaiting, sleepQualityRaiting, description);
                         hotel.getReviewList().add(review);
                         System.out.println("Thank you for reviewing!");
+                        writeToFileService.writeReview(review);
                         return;
                     }
                 }
@@ -210,7 +213,6 @@ public class CustomerService implements ServiceInterface {
 
     public void checkOut(int idBooking, String username) throws IOException {
         auditService.writeAction("checkOut");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -245,7 +247,6 @@ public class CustomerService implements ServiceInterface {
 
     public void changeUsername(String username) throws IOException {
         auditService.writeAction("changeUsername");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -278,7 +279,6 @@ public class CustomerService implements ServiceInterface {
 
     public void changePassword(String username) throws IOException {
         auditService.writeAction("changePassword");
-        Hotel hotel = Hotel.getHotelInstance();
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -312,7 +312,6 @@ public class CustomerService implements ServiceInterface {
     @Override
     public void logIn() throws IOException {
         auditService.writeAction("logIn");
-        Hotel hotel = Hotel.getHotelInstance();
         int nrOfAttempts = 5;
         while (nrOfAttempts > 0){
             System.out.println("\t Username: ");

@@ -7,6 +7,7 @@ public abstract class Room{
     protected RoomStatus roomStatus;
     protected RoomType roomType;
 
+
     public Room(Integer roomNumber, RoomType roomType) {
         count++;
         this.roomNumber = roomNumber;

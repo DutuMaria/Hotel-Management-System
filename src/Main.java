@@ -3,36 +3,48 @@ import entity.hotel.Hotel;
 import entity.payment.Payment;
 import entity.payment.PaymentMethod;
 import entity.payment.PaymentStatus;
+import entity.review.Review;
 import entity.room.*;
 import service.AdminService;
 import service.CustomerService;
 import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
+import service.ReadFromFileService;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchFieldException {
         Scanner scanner = new Scanner(System.in);
         Hotel hotel = Hotel.getHotelInstance();
         Admin admin = Admin.getAdminInstance();
         AdminService adminService = AdminService.getAdminServiceInstance();
         CustomerService customerService = CustomerService.getCustomerServiceInstance();
+        ReadFromFileService readFromFileService = ReadFromFileService.getReadFromFileService();
+
+        // Incarcare customers
+        hotel.getCustomerList().addAll(readFromFileService.readUsers());
+        // Incarcare rooms (StandardRooms + PremiumRooms)
+        List<StandardRoom> standardRooms = readFromFileService.readRooms("src/csv/StandardRooms.csv", StandardRoom.class);
+        List<PremiumRoom> premiumRooms = readFromFileService.readRooms("src/csv/PremiumRooms.csv", PremiumRoom.class);
+        hotel.getRoomList().addAll(Stream.concat(standardRooms.stream(), premiumRooms.stream()).toList());
+        // Incarcare reviews
+        hotel.getReviewList().addAll(readFromFileService.readReviews());
 
 //        Date hardcodate
-        Customer customer1 = new Customer("Mara", "Popescu", UserDocument.ID, "Romania-Bucharest", "0735654755", "maraPopescu", "maraPopescu@123", "marapopescu@gmail.com");
-        Customer customer2 = new Customer("Mihai", "Stoica", UserDocument.PASSPORT, "Romania-Bucharest", "0732251755", "mihaiStoica", "mihaiStoica@123", "mihaiStoica@gmail.com");
-        Customer customer3 = new Customer("Andreea", "Ilie", UserDocument.ID, "Romania-Bucharest", "0755454721", "andreeaIlie", "andreeaIlie@123", "andreeaIlie@gmail.com");
-
+        Customer customer1 = new Customer("Mara", "Pop", UserDocument.ID, "Romania", "0735654755", "maraPop", "maraPop@123", "marapop@gmail.com");
+        Customer customer2 = new Customer("Mihai", "Stoica", UserDocument.PASSPORT, "Romania", "0732251755", "mihaiStoica", "mihaiStoica@123", "mihaiStoica@gmail.com");
+        Customer customer3 = new Customer("Andreea", "Ilie", UserDocument.ID, "Romania", "0755454721", "andreeaIlie", "andreeaIlie@123", "andreeaIlie@gmail.com");
         List<Customer> customerList = new ArrayList<>();
         customerList.add(customer1);
         customerList.add(customer2);
         customerList.add(customer3);
-        hotel.setCustomerList(customerList);
+        hotel.getCustomerList().addAll(customerList);
 
         StandardRoom room1 = new StandardRoom(301, RoomType.SINGLE);
         StandardRoom room2 = new StandardRoom(302, RoomType.SINGLE);
@@ -44,7 +56,6 @@ public class Main {
         PremiumRoom room8 = new PremiumRoom(308, RoomType.SINGLE);
         PremiumRoom room9 = new PremiumRoom(309, RoomType.DOUBLE);
         PremiumRoom room10 = new PremiumRoom(310, RoomType.DOUBLE);
-
         List<Room> roomList = new ArrayList<>();
         roomList.add(room1);
         roomList.add(room2);
@@ -56,7 +67,7 @@ public class Main {
         roomList.add(room8);
         roomList.add(room9);
         roomList.add(room10);
-        hotel.setRoomList(roomList);
+        hotel.getRoomList().addAll(roomList);
 
         Set<Room> roomSet1 = new HashSet<>();
         roomSet1.add(room1);
@@ -100,7 +111,7 @@ public class Main {
         customerY.getPaymentSet().add(payment3);
         hotel.getPaymentList().add(payment3);
 
-//     Cele de mai sus sunt date hardcodate
+        // Menu
 
         while(true) {
             int option;

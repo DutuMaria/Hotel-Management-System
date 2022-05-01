@@ -15,9 +15,11 @@ This project implements the basic necessities of a real hotel => managing custom
 |       viewAllBooking        |    createBooking    |
 | viewBookingsForAGivenPeriod |     payBooking      | 
 |       viewAllPayments       |   changePassword    | 
-|        viewAllRooms         |   changeUsername    |
-|      viewAllCustomers       |     reviewHotel     |
-|      changeRoomStatus       |      checkOut       |
+|     viewUnpaidPayments      |   changeUsername    |
+|        viewAllRooms         |     reviewHotel     |
+|      viewAllCustomers       |      checkOut       |
+|       viewAllReviews        |                     |
+|      changeRoomStatus       |                     |
 |       changeRoomType        |                     |
 |         deleteRoom          |                     |
 
@@ -96,10 +98,10 @@ Condiția de punctare a proiectelor:
 
 1. Extindeți proiectul din prima etapă prin realizarea persistenței utilizând fișiere.
     - [x] Se vor realiza fișiere de tip CSV pentru cel puțin 4 dintre clasele definite în prima etapă. Fiecare coloana din fișier este separata de virgula. Exemplu:nume,prenume,varsta
-    - [ ] Se vor realiza servicii singleton pentru scrierea și citirea din fișiere
-    - [ ] Folosire generice pentru scriere si citire fisiere
-    - [ ] La pornirea programului se vor încărca datele din fișiere utilizând serviciile create
-    - [ ] Scriere in fisiere in timpul rularii aplicatiei
+    - [x] Se vor realiza servicii singleton pentru scrierea și citirea din fișiere
+    - [x] Folosire generice pentru scriere si citire fisiere
+    - [x] La pornirea programului se vor încărca datele din fișiere utilizând serviciile create
+    - [x] Scriere in fisiere in timpul rularii aplicatiei
 2. Realizarea unui serviciu de audit
     - [x] Se va realiza un serviciu care să scrie într-un fișier de tip CSV de fiecare dată când este executata una dintre acțiunile descrise în prima etapă. Structura fișierului: nume_actiune, timestamp
 3. In plus
