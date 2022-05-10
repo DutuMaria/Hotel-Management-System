@@ -5,29 +5,32 @@ This project implements the basic necessities of a real hotel => managing custom
 
 ### Functionalities:
 
-|    AdminService     |   CustomerService   |
-|:-------------------:|:-------------------:|
-|        logIn        |        logIn        |
-|       logOut        |       logOut        |    
-| showFunctionalities | showFunctionalities |
-|     addCustomer     |     viewProfile     |
-|       addRoom       |  viewHotelServices  |
-|   viewAllBookings   |    createBooking    |
-|   viewAllPayments   |     payBooking      | 
-|    viewAllRooms     |   changePassword    | 
-|  viewAllCustomers   |   changeUsername    |
-|  changeRoomStatus   |     reviewHotel     |
-|   changeRoomType    |      checkOut       |
-|     deleteRoom      |                     |
+|        AdminService         |   CustomerService   |
+|:---------------------------:|:-------------------:|
+|            logIn            |        logIn        |
+|           logOut            |       logOut        |    
+|     showFunctionalities     | showFunctionalities |
+|         addCustomer         |     viewProfile     |
+|           addRoom           |  viewHotelServices  |
+|       viewAllBooking        |    createBooking    |
+| viewBookingsForAGivenPeriod |     payBooking      | 
+|       viewAllPayments       |   changePassword    | 
+|     viewUnpaidPayments      |   changeUsername    |
+|        viewAllRooms         |     reviewHotel     |
+|      viewAllCustomers       |      checkOut       |
+|       viewAllReviews        |                     |
+|      changeRoomStatus       |                     |
+|       changeRoomType        |                     |
+|         deleteRoom          |                     |
 
 #### LogIn
 ![](/img/login.png)
 
 #### Admin menu
-![](/img/menuAdmin.png)
+![](/img/adminMenu.png)
 
 #### Customer menu
-![](/img/menuCustomer.png)
+![](/img/customerMenu.png)
 
 
 ------------------------------
@@ -94,12 +97,17 @@ Condiția de punctare a proiectelor:
 ### Etapa II (3 Mai):
 
 1. Extindeți proiectul din prima etapă prin realizarea persistenței utilizând fișiere.
-    - [ ] Se vor realiza fișiere de tip CSV pentru cel puțin 4 dintre clasele definite în prima etapă. Fiecare coloana din fișier este separata de virgula. Exemplu:nume,prenume,varsta
-    - [ ] Se vor realiza servicii singleton generice pentru scrierea și citirea din fișiere
-    - [ ] La pornirea programului se vor încărca datele din fișiere utilizând serviciile create
+    - [x] Se vor realiza fișiere de tip CSV pentru cel puțin 4 dintre clasele definite în prima etapă. Fiecare coloana din fișier este separata de virgula. Exemplu:nume,prenume,varsta
+    - [x] Se vor realiza servicii singleton pentru scrierea și citirea din fișiere
+    - [x] Folosire generice pentru scriere si citire fisiere
+    - [x] La pornirea programului se vor încărca datele din fișiere utilizând serviciile create
+    - [x] Scriere in fisiere in timpul rularii aplicatiei
 2. Realizarea unui serviciu de audit
-    - [ ] Se va realiza un serviciu care să scrie într-un fișier de tip CSV de fiecare dată când este executata una dintre acțiunile descrise în prima etapă. Structura fișierului: nume_actiune, timestamp
-
+    - [x] Se va realiza un serviciu care să scrie într-un fișier de tip CSV de fiecare dată când este executata una dintre acțiunile descrise în prima etapă. Structura fișierului: nume_actiune, timestamp
+3. In plus
+   - [x] Utilizare streams + lambda
+   - [x] Utilizare exceptii
+   - [x] Utilizare colectii in loc de array-uri
 ### Etapa III (31 Mai):
 - [ ] Înlocuiți serviciile realizate în etapă a II-a cu servicii care să asigure persistența utilizând baza de date folosind JDBC.
 - [ ] Să se realizeze servicii care să expună operații de tip create, read, update, delete pentru cel puțin 4 dintre clasele definite.

@@ -10,6 +10,8 @@ import entity.room.Room;
 import entity.room.RoomStatus;
 import entity.user.Customer;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,8 +21,18 @@ import java.util.stream.Collectors;
 
 public class CustomerService implements ServiceInterface {
     private static CustomerService customerService;
+    private static AuditService auditService;
 
-    private CustomerService(){}
+    private static Hotel hotel;
+
+    private static WriteToFileService writeToFileService;
+
+    private CustomerService(){
+
+        auditService = AuditService.getAuditService();
+        hotel = Hotel.getHotelInstance();
+        writeToFileService = WriteToFileService.getWriteToFileService();
+    }
 
     public static CustomerService getCustomerServiceInstance(){
         if (customerService == null)
@@ -28,8 +40,8 @@ public class CustomerService implements ServiceInterface {
         return customerService;
     }
 
-    public void viewProfile(String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void viewProfile(String username) throws IOException {
+        auditService.writeAction("viewProfile");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -41,19 +53,22 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void viewHotelServices(){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void viewHotelServices() throws IOException {
+        auditService.writeAction("viewHotelServices");
         System.out.println(hotel.getHotelServices());
     }
 
-    public void viewAvailableRooms(){
-        Hotel hotel = Hotel.getHotelInstance();
-        System.out.println(hotel.getRoomList().stream().filter(x -> x.getRoomStatus() == RoomStatus.AVAILABLE).collect(Collectors.toList()));
+    public void viewAvailableRooms() throws IOException {
+        auditService.writeAction("viewAvailableRooms");
+        System.out.println(hotel.getRoomList()
+                .stream()
+                .filter(room -> room.getRoomStatus() == RoomStatus.AVAILABLE)
+                .collect(Collectors.toList()));
     }
 
 
-    public void createBooking(String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void createBooking(String username) throws IOException {
+        auditService.writeAction("createBooking");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -115,8 +130,8 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void payBooking(int id, String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void payBooking(int id, String username) throws IOException {
+        auditService.writeAction("payBooking");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -125,7 +140,7 @@ public class CustomerService implements ServiceInterface {
                 Scanner scanner = new Scanner(System.in);
                 for (Payment payment: c.getPaymentSet()){
                     if (payment.getId().equals(id)){
-                        if (payment.getPaymentStatus() == PaymentStatus.NOT_PAID){
+                        if (payment.getPaymentStatus() == PaymentStatus.UNPAID){
                             System.out.println("Payment Number: " + id);
                             System.out.println("Total: " + payment.getTotalPrice() + "$");
                             System.out.println("Choose payment method: ");
@@ -161,8 +176,8 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void reviewHotel(String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void reviewHotel(String username) throws IOException {
+        auditService.writeAction("reviewHotel");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -183,10 +198,10 @@ public class CustomerService implements ServiceInterface {
                         int sleepQualityRaiting = Integer.parseInt(scanner.nextLine());
                         System.out.println("Write a review");
                         String description  = scanner.nextLine();
-                        LocalDate date = LocalDate.now();
-                        Review review = new Review(stars, serviceRaiting, roomsRaiting, cleanlinessRaiting, sleepQualityRaiting, description, date);
+                        Review review = new Review(stars, serviceRaiting, roomsRaiting, cleanlinessRaiting, sleepQualityRaiting, description);
                         hotel.getReviewList().add(review);
                         System.out.println("Thank you for reviewing!");
+                        writeToFileService.writeReview(review);
                         return;
                     }
                 }
@@ -196,8 +211,8 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void checkOut(int idBooking, String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void checkOut(int idBooking, String username) throws IOException {
+        auditService.writeAction("checkOut");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -230,8 +245,8 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void changeUsername(String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void changeUsername(String username) throws IOException {
+        auditService.writeAction("changeUsername");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -262,8 +277,8 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void changePassword(String username){
-        Hotel hotel = Hotel.getHotelInstance();
+    public void changePassword(String username) throws IOException {
+        auditService.writeAction("changePassword");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
@@ -295,8 +310,8 @@ public class CustomerService implements ServiceInterface {
     }
 
     @Override
-    public void logIn() {
-        Hotel hotel = Hotel.getHotelInstance();
+    public void logIn() throws IOException {
+        auditService.writeAction("logIn");
         int nrOfAttempts = 5;
         while (nrOfAttempts > 0){
             System.out.println("\t Username: ");
@@ -322,23 +337,32 @@ public class CustomerService implements ServiceInterface {
     }
 
     @Override
-    public void showFunctionalities(String username) {
+    public void showFunctionalities(String username) throws IOException {
+        auditService.writeAction("showFunctionalities");
         int option = 0;
         while (option != 9){
-            System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
-            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
-            System.out.println("\t 1. View profile.");
-            System.out.println("\t 2. View hotel services.");
-            System.out.println("\t 3. Create a booking.");
-            System.out.println("\t 4. Pay a booking.");
-            System.out.println("\t 5. Change your username.");
-            System.out.println("\t 6. Change your password.");
-            System.out.println("\t 7. Review Hotel.");
-            System.out.println("\t 8. Check-out.");
-            System.out.println("\t 9. Exit.\n");
-
             Scanner scanner = new Scanner(System.in);
-            option = scanner.nextInt();
+
+            while (true){
+                try {
+                    System.out.println("\n\t-------------------- Customer Functionalities ---------------------\n");
+                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9):");
+                    System.out.println("\t 1. View profile.");
+                    System.out.println("\t 2. View hotel services.");
+                    System.out.println("\t 3. Create a booking.");
+                    System.out.println("\t 4. Pay a booking.");
+                    System.out.println("\t 5. Change your username.");
+                    System.out.println("\t 6. Change your password.");
+                    System.out.println("\t 7. Review Hotel.");
+                    System.out.println("\t 8. Check-out.");
+                    System.out.println("\t 9. Exit.\n");
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (NumberFormatException e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Try again!");
+                }
+            }
 
             switch (option){
                 case (1):
@@ -351,8 +375,18 @@ public class CustomerService implements ServiceInterface {
                     createBooking(username);
                     break;
                 case (4):
-                    System.out.println("Type a booking id (number): ");
-                    int id = scanner.nextInt();
+                    int id;
+                    while (true){
+                        try {
+                            System.out.println("Type a booking id (number): ");
+                            id = Integer.parseInt(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     payBooking(id, username);
                     break;
                 case (5):
@@ -365,8 +399,17 @@ public class CustomerService implements ServiceInterface {
                     reviewHotel(username);
                     break;
                 case (8):
-                    System.out.println("Type a booking id (number): ");
-                    id = scanner.nextInt();
+                    while (true){
+                        try {
+                            System.out.println("Type a booking id (number): ");
+                            id = Integer.parseInt(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     checkOut(id, username);
                     break;
             }

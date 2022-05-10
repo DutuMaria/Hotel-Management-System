@@ -3,47 +3,59 @@ import entity.hotel.Hotel;
 import entity.payment.Payment;
 import entity.payment.PaymentMethod;
 import entity.payment.PaymentStatus;
+import entity.review.Review;
 import entity.room.*;
 import service.AdminService;
 import service.CustomerService;
 import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
+import service.ReadFromFileService;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, NoSuchFieldException {
         Scanner scanner = new Scanner(System.in);
         Hotel hotel = Hotel.getHotelInstance();
         Admin admin = Admin.getAdminInstance();
         AdminService adminService = AdminService.getAdminServiceInstance();
         CustomerService customerService = CustomerService.getCustomerServiceInstance();
+        ReadFromFileService readFromFileService = ReadFromFileService.getReadFromFileService();
+
+        // Incarcare customers
+        hotel.getCustomerList().addAll(readFromFileService.readUsers());
+        // Incarcare rooms (StandardRooms + PremiumRooms)
+        List<StandardRoom> standardRooms = readFromFileService.readRooms("src/csv/StandardRooms.csv", StandardRoom.class);
+        List<PremiumRoom> premiumRooms = readFromFileService.readRooms("src/csv/PremiumRooms.csv", PremiumRoom.class);
+        hotel.getRoomList().addAll(Stream.concat(standardRooms.stream(), premiumRooms.stream()).toList());
+        // Incarcare reviews
+        hotel.getReviewList().addAll(readFromFileService.readReviews());
 
 //        Date hardcodate
-        Customer customer1 = new Customer("Mara", "Popescu", UserDocument.ID, "Romania-Bucharest", "0735654755", "maraPopescu", "maraPopescu@123", "marapopescu@gmail.com");
-        Customer customer2 = new Customer("Mihai", "Stoica", UserDocument.PASSPORT, "Romania-Bucharest", "0732251755", "mihaiStoica", "mihaiStoica@123", "mihaiStoica@gmail.com");
-        Customer customer3 = new Customer("Andreea", "Ilie", UserDocument.ID, "Romania-Bucharest", "0755454721", "andreeaIlie", "andreeaIlie@123", "andreeaIlie@gmail.com");
-
+        Customer customer1 = new Customer("Mara", "Pop", UserDocument.ID, "Romania", "0735654755", "maraPop", "maraPop@123", "marapop@gmail.com");
+        Customer customer2 = new Customer("Mihai", "Stoica", UserDocument.PASSPORT, "Romania", "0732251755", "mihaiStoica", "mihaiStoica@123", "mihaiStoica@gmail.com");
+        Customer customer3 = new Customer("Andreea", "Ilie", UserDocument.ID, "Romania", "0755454721", "andreeaIlie", "andreeaIlie@123", "andreeaIlie@gmail.com");
         List<Customer> customerList = new ArrayList<>();
         customerList.add(customer1);
         customerList.add(customer2);
         customerList.add(customer3);
-        hotel.setCustomerList(customerList);
+        hotel.getCustomerList().addAll(customerList);
 
-        StandardRoom room1 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room2 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room3 = new StandardRoom(RoomType.SINGLE);
-        StandardRoom room4 = new StandardRoom(RoomType.DOUBLE);
-        StandardRoom room5 = new StandardRoom(RoomType.DOUBLE);
-        StandardRoom room6 = new StandardRoom(RoomType.DOUBLE);
-        PremiumRoom room7 = new PremiumRoom(RoomType.SINGLE);
-        PremiumRoom room8 = new PremiumRoom(RoomType.SINGLE);
-        PremiumRoom room9 = new PremiumRoom(RoomType.DOUBLE);
-        PremiumRoom room10 = new PremiumRoom(RoomType.DOUBLE);
-
+        StandardRoom room1 = new StandardRoom(301, RoomType.SINGLE);
+        StandardRoom room2 = new StandardRoom(302, RoomType.SINGLE);
+        StandardRoom room3 = new StandardRoom(303, RoomType.SINGLE);
+        StandardRoom room4 = new StandardRoom(304, RoomType.DOUBLE);
+        StandardRoom room5 = new StandardRoom(305, RoomType.DOUBLE);
+        StandardRoom room6 = new StandardRoom(306, RoomType.DOUBLE);
+        PremiumRoom room7 = new PremiumRoom(307, RoomType.SINGLE);
+        PremiumRoom room8 = new PremiumRoom(308, RoomType.SINGLE);
+        PremiumRoom room9 = new PremiumRoom(309, RoomType.DOUBLE);
+        PremiumRoom room10 = new PremiumRoom(310, RoomType.DOUBLE);
         List<Room> roomList = new ArrayList<>();
         roomList.add(room1);
         roomList.add(room2);
@@ -55,7 +67,7 @@ public class Main {
         roomList.add(room8);
         roomList.add(room9);
         roomList.add(room10);
-        hotel.setRoomList(roomList);
+        hotel.getRoomList().addAll(roomList);
 
         Set<Room> roomSet1 = new HashSet<>();
         roomSet1.add(room1);
@@ -76,7 +88,7 @@ public class Main {
 
         Set<Room> roomSet2 = new HashSet<>();
         roomSet2.add(room2);
-        Booking booking2 = new Booking(customer1, roomSet2, LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 12));
+        Booking booking2 = new Booking(customer1, roomSet2, LocalDate.of(2022, 4, 16), LocalDate.of(2022, 4, 17));
         room2.setRoomStatus(RoomStatus.UNAVAILABLE);
         hotel.getBookingList().add(booking2);
         customer1.getBookingSet().add(booking2);
@@ -99,31 +111,40 @@ public class Main {
         customerY.getPaymentSet().add(payment3);
         hotel.getPaymentList().add(payment3);
 
-//     Cele de mai sus sunt date hardcodate
+        // Menu
 
-        System.out.println("\n\t -------------------- LOGIN --------------------");
-        System.out.println("\t Choose your account type (1/2/3):");
-        System.out.println("\t 1. Admin");
-        System.out.println("\t 2. Customer");
-        System.out.println("\t 3. I don't have an account. I want to register.");
+        while(true) {
+            int option;
+            while (true){
+                try {
+                    System.out.println("\n\t -------------------- LOGIN --------------------");
+                    System.out.println("\t Choose your account type (1/2/3/4):");
+                    System.out.println("\t 1. Admin");
+                    System.out.println("\t 2. Customer");
+                    System.out.println("\t 3. I don't have an account. I want to register.");
+                    System.out.println("\t 4. Exit!");
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (NumberFormatException e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Try again!");
+                }
+            }
 
-        while(true){
-            int option = scanner.nextInt();
             if (option == 1){
                 adminService.logIn();
                 adminService.logOut();
-                break;
-            } else if(option == 2){
+            } else if (option == 2){
                 customerService.logIn();
                 customerService.logOut();
-                break;
-            } else if(option == 3){
+            } else if (option == 3){
                 //Register
                 adminService.addCustomer();
                 customerService.logIn();
                 customerService.logOut();
+            } else if (option == 4) {
                 break;
-            } else{
+            } else {
                 System.out.println("Failed to LogIn! Try again!");
             }
         }

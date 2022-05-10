@@ -1,18 +1,37 @@
 package service;
 
+import entity.booking.Booking;
 import entity.hotel.Hotel;
+import entity.payment.PaymentStatus;
 import entity.room.*;
 import entity.user.Admin;
 import entity.user.Customer;
 import entity.user.UserDocument;
+import exception.*;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AdminService implements ServiceInterface {
     private static AdminService adminService;
     private static Hotel hotel;
+    private static AuditService auditService;
 
-    private AdminService(){ hotel = Hotel.getHotelInstance(); }
+    private static WriteToFileService writeToFileService;
+
+    private AdminService(){
+        hotel = Hotel.getHotelInstance();
+        auditService = AuditService.getAuditService();
+        writeToFileService = WriteToFileService.getWriteToFileService();
+    }
 
     public static AdminService getAdminServiceInstance(){
         if (adminService == null)
@@ -20,9 +39,29 @@ public class AdminService implements ServiceInterface {
         return adminService;
     }
 
-    public void addRoom(){
+    public void  uniqueUsername(String username) throws InvalidUsernameException {
+        Optional<Customer> any = hotel.getCustomerList()
+                .stream()
+                .filter(customer -> Objects.equals(customer.getUsername(), username))
+                .findAny();
+
+        if (any.isPresent()){
+            throw new InvalidUsernameException("Username " + username + " is already taken!");
+        }
+    }
+    public void passwordValidator(String password) throws InvalidPasswordException {
+        boolean isValid = password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–{}:;',?/*~$^+=<>]).{5,}$");
+        if (!isValid) {
+            throw new InvalidPasswordException("Invalid password! Password must contain at least one lowercase, one uppercase, one special character, one digit and must have a length of at least 5!");
+        }
+    }
+
+    public void addRoom() throws IOException {
+        auditService.writeAction("addRoom");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Complete the following information in order to add a room!");
+        System.out.println("Type a room number: ");
+        Integer roomNumber = Integer.parseInt(scanner.nextLine());
         System.out.println("If you want to add a Standard Room => type 1");
         System.out.println("If you want to add a Premium Room => type 2");
         String roomModelNr = scanner.nextLine();
@@ -32,21 +71,25 @@ public class AdminService implements ServiceInterface {
 
         if (Objects.equals(roomModelNr, "1")) {
             if (Objects.equals(roomTypeNr, "1")) {
-                StandardRoom standardRoom = new StandardRoom(RoomType.SINGLE);
+                StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(standardRoom);
+                writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
             } else if (Objects.equals(roomTypeNr, "2")){
-                StandardRoom standardRoom = new StandardRoom(RoomType.DOUBLE);
+                StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(standardRoom);
+                writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
         } else if (Objects.equals(roomModelNr, "2")){
             if (Objects.equals(roomTypeNr, "1")) {
-                PremiumRoom premiumRoom = new PremiumRoom(RoomType.SINGLE);
+                PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(premiumRoom);
+                writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
             } else if (Objects.equals(roomTypeNr, "2")){
-                PremiumRoom premiumRoom = new PremiumRoom(RoomType.DOUBLE);
+                PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(premiumRoom);
+                writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
@@ -55,7 +98,8 @@ public class AdminService implements ServiceInterface {
         }
     }
 
-    public void addCustomer(){
+    public void addCustomer() throws IOException {
+        auditService.writeAction("addCustomer");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Complete the following information in order to register!");
         System.out.println("First Name: ");
@@ -84,55 +128,135 @@ public class AdminService implements ServiceInterface {
         String address = scanner.nextLine();
         System.out.println("Telephone: ");
         String telephone = scanner.nextLine();
-        System.out.println("Username: ");
-        String username = scanner.nextLine();
-        System.out.println("Password: ");
-        String password = scanner.nextLine();
+
+        String username;
+        while (true) {
+            try {
+                System.out.println("Username: ");
+                username = scanner.nextLine();
+                uniqueUsername(username);
+                break;
+            } catch (InvalidUsernameException e) {
+                System.out.println(e.getMessage());
+                System.out.println("Try again!");
+            }
+        }
+
+        String password;
+        while (true) {
+            try {
+                System.out.println("Password: ");
+                password = scanner.nextLine();
+                passwordValidator(password);
+                break;
+            } catch (InvalidPasswordException e) {
+                System.out.println(e.getMessage());
+                System.out.println("Try again!");
+            }
+        }
+
         System.out.println("Email: ");
         String email = scanner.nextLine();
 
         Customer customer = new Customer(firstName, lastName, userDocument, address, telephone, username, password, email);
         hotel.getCustomerList().add(customer);
+        writeToFileService.writeUser(customer);
     }
 
-    public void viewAllBookings(){ System.out.println(hotel.getBookingList()); }
+    public void viewAllBookings() throws IOException {
+        auditService.writeAction("viewAllBookings");
+        System.out.println(hotel.getBookingList());
+    }
 
-    public void viewAllRooms(){
+    public void viewBookingsForAGivenPeriod(LocalDate startDate, LocalDate endDate) throws IOException {
+        auditService.writeAction("viewBookingsForAGivenPeriod");
+        Consumer<Booking> bookingConsumer = System.out::println; // method reference
+        Predicate<Booking> bookingPredicate = booking ->  (startDate.isBefore(booking.getArrival()) || startDate.isEqual(booking.getArrival())) && (endDate.isAfter(booking.getDeparture()) || endDate.isEqual(booking.getDeparture()));
+        for (Booking booking : hotel.getBookingList()) {
+            if (bookingPredicate.test(booking)){
+                bookingConsumer.accept(booking);
+            }
+        }
+    }
+
+    public void viewAllRooms() throws IOException {
+        auditService.writeAction("viewAllRooms");
         RoomTypeComparator roomTypeComparator = new RoomTypeComparator();
         hotel.getRoomList().sort(roomTypeComparator);
         System.out.println(hotel.getRoomList());
     }
 
-    public void viewAllPayments(){ System.out.println(hotel.getPaymentList()); }
+    public void viewAllPayments() throws IOException {
+        auditService.writeAction("viewAllPayments");
+        System.out.println(hotel.getPaymentList());
+    }
 
-    public void viewAllCustomers(){
+    public void viewUnpaidPayments() throws IOException {
+        auditService.writeAction("viewUnpaidPayments");
+        Hotel hotel = Hotel.getHotelInstance();
+        System.out.println(hotel.getPaymentList()
+                .stream()
+                .filter(payment -> payment.getPaymentStatus() == PaymentStatus.UNPAID)
+                .map(payment -> "Payment id: " + payment.getId().toString() + " => " + payment.getTotalPrice().toString())
+                .collect(Collectors.toList()));
+    }
+
+    public void viewAllCustomers() throws IOException {
+        auditService.writeAction("viewAllCustomers");
         System.out.println(hotel.getCustomerList());
     }
 
-    public void changeRoomStatus(int roomNumber, RoomStatus roomStatus){
+    public void viewAllReviews() throws IOException {
+        auditService.writeAction("viewAllReviews");
+        System.out.println(hotel.getReviewList());
+    }
+
+    public void changeRoomStatus(int roomNumber, RoomStatus roomStatus) throws IOException {
+        auditService.writeAction("changeRoomStatus");
+
         for (Room room :hotel.getRoomList()){
             if (room.getRoomNumber() == roomNumber && room.getRoomStatus() != roomStatus){
                 room.setRoomStatus(roomStatus);
+                System.out.println("Room " + roomNumber + " => status changed to " + roomStatus + "!");
+                return;
             }
         }
+        System.out.println("Room status is already " + roomStatus + "!");
     }
 
-    public void changeRoomType(int roomNumber, RoomType roomType){
+    public void changeRoomType(int roomNumber, RoomType roomType) throws IOException {
+        auditService.writeAction("changeRoomType");
+
         for (Room room :hotel.getRoomList()){
             if (room.getRoomNumber() == roomNumber && room.getRoomType() != roomType){
                 room.setRoomType(roomType);
+                System.out.println("Room type successfully changed!");
+                return;
             }
+        }
+        System.out.println("Room type is already " + roomType + "!");
+    }
+
+    public void deleteRoom(int roomNumber) throws IOException {
+        auditService.writeAction("deleteRoom");
+        // TODO: verificare daca aceasta camera are booking-uri asociate => in viitor => schimbi respectivul booking, daca este posibil
+        //                                                               => in prezent => nu poti sterge camera
+        hotel.getRoomList().removeIf(room -> room.getRoomNumber() == roomNumber);
+        System.out.println("Room successfully deleted!");
+    }
+
+    public void checkIfRoomExists(int roomNr) throws RoomDoesntExistException {
+        Optional<Room> any = hotel.getRoomList().stream()
+                .filter(room -> room.getRoomNumber() == roomNr)
+                .findAny();
+        if (any.isEmpty()){
+            throw new RoomDoesntExistException("Room number " + roomNr + " doesn't exist!");
         }
     }
 
-    public void deleteRoom(int roomNumber){
-        // TODO: verificare daca aceasta camera are booking-uri asociate => in viitor => schimbi respectivul booking, daca este posibil
-        //                                                               => in prezent => nu poti sterge camera
-        hotel.getRoomList().removeIf(x-> x.getRoomNumber() == roomNumber);
-    }
-
     @Override
-    public void logIn() {
+    public void logIn() throws IOException {
+        auditService.writeAction("logIn");
         Admin admin = Admin.getAdminInstance();
         int nrOfAttempts = 5;
         while (nrOfAttempts > 0){
@@ -156,57 +280,133 @@ public class AdminService implements ServiceInterface {
     }
 
     @Override
-    public void showFunctionalities(String username) {
+    public void showFunctionalities(String username) throws IOException {
+        auditService.writeAction("showFunctionalities");
         int option = 0;
-        while (option != 10){
-            System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
-            System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10):");
-            System.out.println("\t 1. View all bookings.");
-            System.out.println("\t 2. View all payments.");
-            System.out.println("\t 3. View all customers.");
-            System.out.println("\t 4. View all rooms.");
-            System.out.println("\t 5. Add customer.");
-            System.out.println("\t 6. Add room.");
-            System.out.println("\t 7. Delete room.");
-            System.out.println("\t 8. Change room status.");
-            System.out.println("\t 9. Change room type.");
-            System.out.println("\t 10. Exit.\n");
-
+        while (option != 12){
             Scanner scanner = new Scanner(System.in);
-            option = scanner.nextInt();
+
+            while (true){
+                try {
+                    System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
+                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10/11/12/13):");
+                    System.out.println("\t 1. View all bookings.");
+                    System.out.println("\t 2. View bookings for a given period of time.");
+                    System.out.println("\t 3. View all payments.");
+                    System.out.println("\t 4. View unpaid payments.");
+                    System.out.println("\t 5. View all customers.");
+                    System.out.println("\t 6. View all rooms.");
+                    System.out.println("\t 7. View all reviews.");
+                    System.out.println("\t 8. Add customer.");
+                    System.out.println("\t 9. Add room.");
+                    System.out.println("\t 10. Delete room.");
+                    System.out.println("\t 11. Change room status.");
+                    System.out.println("\t 12. Change room type.");
+                    System.out.println("\t 13. Exit.\n");
+                    option = Integer.parseInt(scanner.nextLine());
+                    break;
+                } catch (NumberFormatException e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Try again!");
+                }
+            }
 
             switch (option){
                 case (1):
                     viewAllBookings();
                     break;
                 case (2):
-                    viewAllPayments();
+                    LocalDate startDate, endDate;
+                    while (true) {
+                        try {
+                            System.out.println("\t Enter start date (format - yyyy-mm-dd): ");
+                            startDate = LocalDate.parse(scanner.nextLine());
+                            break;
+                        } catch (DateTimeParseException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
+                    while (true) {
+                        try {
+                            System.out.println("\t Enter end date (format - yyyy-mm-dd): ");
+                            endDate =  LocalDate.parse(scanner.nextLine());
+                            break;
+                        } catch (DateTimeParseException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
+                    viewBookingsForAGivenPeriod(startDate, endDate);
                     break;
                 case (3):
-                    viewAllCustomers();
+                    viewAllPayments();
                     break;
                 case (4):
-                    viewAllRooms();
+                    viewUnpaidPayments();
                     break;
                 case (5):
-                    addCustomer();
+                    viewAllCustomers();
                     break;
                 case (6):
-                    addRoom();
+                    viewAllRooms();
                     break;
                 case (7):
-                    int roomNr;
-                    System.out.println("\t Enter room number: ");
-                    roomNr = scanner.nextInt();
-                    deleteRoom(roomNr);
+                    viewAllReviews();
                     break;
                 case (8):
-                    System.out.println("\t Enter room number: ");
-                    roomNr = scanner.nextInt();
+                    addCustomer();
+                    break;
+                case (9):
+                    addRoom();
+                    break;
+                case (10):
+                    int roomNr;
+                    while (true) {
+                        try {
+                            System.out.println("\t Enter room number: ");
+                            roomNr = Integer.parseInt(scanner.nextLine());
+                            checkIfRoomExists(roomNr);
+                            break;
+                        } catch (RoomDoesntExistException | NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
+                    deleteRoom(roomNr);
+                    break;
+                case (11):
+                    while (true) {
+                        try {
+                            System.out.println("\t Enter room number: ");
+                            roomNr = Integer.parseInt(scanner.nextLine());
+                            checkIfRoomExists(roomNr);
+                            break;
+                        } catch (RoomDoesntExistException | NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     int roomStatus;
-                    System.out.println("\t If you want to make the room UNAVAILABLE => type 0");
-                    System.out.println("\t If you want to make the room AVAILABLE => type 1 ");
-                    roomStatus = scanner.nextInt();
+                    while (true) {
+                        try {
+                            System.out.println("\t If you want to make the room UNAVAILABLE => type 0");
+                            System.out.println("\t If you want to make the room AVAILABLE => type 1 ");
+                            roomStatus = Integer.parseInt(scanner.nextLine());
+                            if (roomStatus != 1 && roomStatus != 0) {
+                                throw new RoomAvailablilityException("Enter 0 or 1 for room availability!");
+                            }
+                            break;
+                        } catch (RoomAvailablilityException | NumberFormatException  e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     if (roomStatus == 0){
                         changeRoomStatus(roomNr, RoomStatus.UNAVAILABLE);
                     }
@@ -214,13 +414,35 @@ public class AdminService implements ServiceInterface {
                         changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
                     }
                     break;
-                case (9):
-                    System.out.println("\t Enter room number: ");
-                    roomNr = scanner.nextInt();
+                case (12):
+                    while (true) {
+                        try {
+                            System.out.println("\t Enter room number: ");
+                            roomNr = Integer.parseInt(scanner.nextLine());
+                            checkIfRoomExists(roomNr);
+                            break;
+                        } catch (RoomDoesntExistException | NumberFormatException e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     int roomType;
-                    System.out.println("\t If you want to make the room Single => type 1");
-                    System.out.println("\t If you want to make the room Double => type 2");
-                    roomType = scanner.nextInt();
+                    while (true) {
+                        try {
+                            System.out.println("\t If you want to make the room Single => type 1");
+                            System.out.println("\t If you want to make the room Double => type 2");
+                            roomType = Integer.parseInt(scanner.nextLine());
+                            if (roomType != 1 && roomType != 2) {
+                                throw new RoomTypeException("Enter 1 or 2 for room type!");
+                            }
+                            break;
+                        } catch (RoomTypeException | NumberFormatException  e){
+                            System.out.println(e.getMessage());
+                            System.out.println("Try again!");
+                        }
+                    }
+
                     if (roomType == 1){
                         changeRoomType(roomNr, RoomType.SINGLE);
                     }
