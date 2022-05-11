@@ -5,23 +5,24 @@ This project implements the basic necessities of a real hotel => managing custom
 
 ### Functionalities:
 
-|        AdminService         |   CustomerService   |
-|:---------------------------:|:-------------------:|
-|            logIn            |        logIn        |
-|           logOut            |       logOut        |    
-|     showFunctionalities     | showFunctionalities |
-|         addCustomer         |     viewProfile     |
-|           addRoom           |  viewHotelServices  |
-|       viewAllBooking        |    createBooking    |
-| viewBookingsForAGivenPeriod |     payBooking      | 
-|       viewAllPayments       |   changePassword    | 
-|     viewUnpaidPayments      |   changeUsername    |
-|        viewAllRooms         |     reviewHotel     |
-|      viewAllCustomers       |      checkOut       |
-|       viewAllReviews        |                     |
-|      changeRoomStatus       |                     |
-|       changeRoomType        |                     |
-|         deleteRoom          |                     |
+|                       AdminService                        |           CustomerService           |
+|:---------------------------------------------------------:|:-----------------------------------:|
+|                           logIn                           |                logIn                |
+|                          logOut                           |               logOut                |    
+|                    showFunctionalities                    |         showFunctionalities         |
+|                        addCustomer                        |             viewProfile             |
+|                          addRoom                          |          viewHotelServices          |
+|                      viewAllBooking                       |            createBooking            |
+|                viewBookingsForAGivenPeriod                |             payBooking              | 
+|                      viewAllPayments                      | changePassword (update - customers) | 
+|                    viewUnpaidPayments                     | changeUsername (update - customers) |
+|  viewAllRooms (select * 2 - premiumRooms, standardRooms)  |             reviewHotel             |
+|           viewAllCustomers (select - customers)           |              checkOut               |
+|             viewAllReviews (select - reviews)             |   deleteReview (delete - reviews)   |
+|                     changeRoomStatus                      |   updateReview (update - reviews)   |
+| changeRoomType (update * 2 - premiumRooms, standardRooms) |                                     |
+|   deleteRoom (delete * 2 - premiumRooms, standardRooms)   |                                     |
+|            deleteCustomer (delete - customers)            |                                     |
 
 #### LogIn
 ![](/img/login.png)
@@ -109,5 +110,5 @@ Condiția de punctare a proiectelor:
    - [x] Utilizare exceptii
    - [x] Utilizare colectii in loc de array-uri
 ### Etapa III (31 Mai):
-- [ ] Înlocuiți serviciile realizate în etapă a II-a cu servicii care să asigure persistența utilizând baza de date folosind JDBC.
-- [ ] Să se realizeze servicii care să expună operații de tip create, read, update, delete pentru cel puțin 4 dintre clasele definite.
+- [x] Înlocuiți serviciile realizate în etapă a II-a cu servicii care să asigure persistența utilizând baza de date folosind JDBC.
+- [x] Să se realizeze servicii care să expună operații de tip create, read, update, delete pentru cel puțin 4 dintre clasele definite.

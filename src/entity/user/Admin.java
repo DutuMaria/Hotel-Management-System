@@ -4,7 +4,8 @@ public class Admin extends User {
     private static Admin admin;
 
     private Admin() {
-        super(1, "Florentina", "Constantinescu","admin", "Admin@123", "admin@gmail.com");
+        super("Florentina", "Constantinescu","admin", "Admin@123", "admin@gmail.com");
+//        super(1, "Florentina", "Constantinescu","admin", "Admin@123", "admin@gmail.com");
     }
 
     public static Admin getAdminInstance(){

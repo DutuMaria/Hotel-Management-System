@@ -1,9 +1,13 @@
+import dao.configuration.DatabaseConfiguration;
+import dao.repository.CustomerRepository;
+import dao.repository.PremiumRoomRepository;
+import dao.repository.ReviewRepository;
+import dao.repository.StandardRoomRepository;
 import entity.booking.Booking;
 import entity.hotel.Hotel;
 import entity.payment.Payment;
 import entity.payment.PaymentMethod;
 import entity.payment.PaymentStatus;
-import entity.review.Review;
 import entity.room.*;
 import service.AdminService;
 import service.CustomerService;
@@ -20,6 +24,34 @@ import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) throws IOException, NoSuchFieldException {
+
+//        CREARE TABELE
+
+//        CUSTOMERS
+        CustomerRepository customerRepository = CustomerRepository.getCustomerRepository();
+        customerRepository.createTable();
+
+//        STANDARD ROOMS
+        StandardRoomRepository standardRoomRepository = StandardRoomRepository.getStandardRoomRepository();
+        standardRoomRepository.createTable();
+//        standardRoomRepository.insertStandardRoom(401, RoomType.SINGLE);
+//        standardRoomRepository.selectStandardRooms();
+//        standardRoomRepository.updateRoomType(401, RoomType.DOUBLE);
+//        standardRoomRepository.selectStandardRooms();
+//        standardRoomRepository.deleteStandardRoom(401);
+
+//        PREMIUM ROOMS
+        PremiumRoomRepository premiumRoomRepository = PremiumRoomRepository.getPremiumRoomRepository();
+        premiumRoomRepository.createTable();
+
+//       REVIEWS
+        ReviewRepository reviewRepository = ReviewRepository.getReviewRepository();
+        reviewRepository.createTable();
+//        reviewRepository.deleteReview(3); // a fost sters deja din baza de date
+
+        DatabaseConfiguration.closeDatabaseConfiguration();
+
+
         Scanner scanner = new Scanner(System.in);
         Hotel hotel = Hotel.getHotelInstance();
         Admin admin = Admin.getAdminInstance();
@@ -126,7 +158,7 @@ public class Main {
                     option = Integer.parseInt(scanner.nextLine());
                     break;
                 } catch (NumberFormatException e){
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                     System.out.println("Try again!");
                 }
             }

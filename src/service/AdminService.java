@@ -1,5 +1,9 @@
 package service;
 
+import dao.repository.CustomerRepository;
+import dao.repository.PremiumRoomRepository;
+import dao.repository.ReviewRepository;
+import dao.repository.StandardRoomRepository;
 import entity.booking.Booking;
 import entity.hotel.Hotel;
 import entity.payment.PaymentStatus;
@@ -10,6 +14,7 @@ import entity.user.UserDocument;
 import exception.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -24,13 +29,21 @@ public class AdminService implements ServiceInterface {
     private static AdminService adminService;
     private static Hotel hotel;
     private static AuditService auditService;
-
     private static WriteToFileService writeToFileService;
+    private static ReviewRepository reviewRepository;
+    private static StandardRoomRepository standardRoomRepository;
+    private static PremiumRoomRepository premiumRoomRepository;
+    private static CustomerRepository customerRepository;
+
 
     private AdminService(){
         hotel = Hotel.getHotelInstance();
         auditService = AuditService.getAuditService();
         writeToFileService = WriteToFileService.getWriteToFileService();
+        reviewRepository = ReviewRepository.getReviewRepository();
+        standardRoomRepository = StandardRoomRepository.getStandardRoomRepository();
+        premiumRoomRepository = PremiumRoomRepository.getPremiumRoomRepository();
+        customerRepository = CustomerRepository.getCustomerRepository();
     }
 
     public static AdminService getAdminServiceInstance(){
@@ -74,10 +87,12 @@ public class AdminService implements ServiceInterface {
                 StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(standardRoom);
                 writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
+                standardRoomRepository.insertStandardRoom(roomNumber, RoomType.SINGLE);
             } else if (Objects.equals(roomTypeNr, "2")){
                 StandardRoom standardRoom = new StandardRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(standardRoom);
                 writeToFileService.writeRoom(standardRoom, "src/csv/StandardRooms.csv");
+                standardRoomRepository.insertStandardRoom(roomNumber, RoomType.DOUBLE);
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
@@ -86,10 +101,12 @@ public class AdminService implements ServiceInterface {
                 PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.SINGLE);
                 hotel.getRoomList().add(premiumRoom);
                 writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
+                premiumRoomRepository.insertPremiumRoom(roomNumber, RoomType.SINGLE);
             } else if (Objects.equals(roomTypeNr, "2")){
                 PremiumRoom premiumRoom = new PremiumRoom(roomNumber, RoomType.DOUBLE);
                 hotel.getRoomList().add(premiumRoom);
                 writeToFileService.writeRoom(premiumRoom, "src/csv/PremiumRooms.csv");
+                premiumRoomRepository.insertPremiumRoom(roomNumber, RoomType.DOUBLE);
             } else {
                 System.out.println("Wrong input for (Single/Double) room!");
             }
@@ -111,17 +128,14 @@ public class AdminService implements ServiceInterface {
         String userDocumentNr = scanner.nextLine();
         UserDocument userDocument;
 
-        switch (userDocumentNr){
-            case ("1"):
-                userDocument = UserDocument.ID;
-                break;
-            case ("2"):
-                userDocument = UserDocument.PASSPORT;
-                break;
-            default:
+        switch (userDocumentNr) {
+            case ("1") -> userDocument = UserDocument.ID;
+            case ("2") -> userDocument = UserDocument.PASSPORT;
+            default -> {
                 System.out.println("Wrong input for userDocument");
                 //userDocument = UserDocument.ID;
                 return;
+            }
         }
 
         System.out.println("Address: ");
@@ -137,7 +151,7 @@ public class AdminService implements ServiceInterface {
                 uniqueUsername(username);
                 break;
             } catch (InvalidUsernameException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
                 System.out.println("Try again!");
             }
         }
@@ -150,7 +164,7 @@ public class AdminService implements ServiceInterface {
                 passwordValidator(password);
                 break;
             } catch (InvalidPasswordException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
                 System.out.println("Try again!");
             }
         }
@@ -161,6 +175,7 @@ public class AdminService implements ServiceInterface {
         Customer customer = new Customer(firstName, lastName, userDocument, address, telephone, username, password, email);
         hotel.getCustomerList().add(customer);
         writeToFileService.writeUser(customer);
+        customerRepository.insertCustomer(firstName, lastName, userDocument, address, telephone, username, password, email);
     }
 
     public void viewAllBookings() throws IOException {
@@ -181,9 +196,13 @@ public class AdminService implements ServiceInterface {
 
     public void viewAllRooms() throws IOException {
         auditService.writeAction("viewAllRooms");
-        RoomTypeComparator roomTypeComparator = new RoomTypeComparator();
-        hotel.getRoomList().sort(roomTypeComparator);
-        System.out.println(hotel.getRoomList());
+//        AFISARE PENTRU ETAPA 1 (SORTARE + COMPARATOR)
+//        RoomTypeComparator roomTypeComparator = new RoomTypeComparator();
+//        hotel.getRoomList().sort(roomTypeComparator);
+//        System.out.println(hotel.getRoomList());
+//        AFISARE PENTRU ETAPA 3
+        standardRoomRepository.selectStandardRooms();
+        premiumRoomRepository.selectPremiumRooms();
     }
 
     public void viewAllPayments() throws IOException {
@@ -203,12 +222,14 @@ public class AdminService implements ServiceInterface {
 
     public void viewAllCustomers() throws IOException {
         auditService.writeAction("viewAllCustomers");
-        System.out.println(hotel.getCustomerList());
+//        System.out.println(hotel.getCustomerList());
+        customerRepository.selectCustomers();
     }
 
     public void viewAllReviews() throws IOException {
         auditService.writeAction("viewAllReviews");
-        System.out.println(hotel.getReviewList());
+//        System.out.println(hotel.getReviewList());
+        reviewRepository.selectReviews();
     }
 
     public void changeRoomStatus(int roomNumber, RoomStatus roomStatus) throws IOException {
@@ -228,8 +249,18 @@ public class AdminService implements ServiceInterface {
         auditService.writeAction("changeRoomType");
 
         for (Room room :hotel.getRoomList()){
+            System.out.println(room.getRoomNumber().toString() + room.getRoomType().toString());
             if (room.getRoomNumber() == roomNumber && room.getRoomType() != roomType){
                 room.setRoomType(roomType);
+
+                if (standardRoomRepository.selectStandardRoomByRoomNumber(roomNumber) != null) {
+                    standardRoomRepository.updateStandardRoomType(roomNumber, roomType);
+                }
+
+                if (premiumRoomRepository.selectPremiumRoomByRoomNumber(roomNumber) != null) {
+                    premiumRoomRepository.updatePremiumRoomType(roomNumber, roomType);
+                }
+
                 System.out.println("Room type successfully changed!");
                 return;
             }
@@ -241,8 +272,23 @@ public class AdminService implements ServiceInterface {
         auditService.writeAction("deleteRoom");
         // TODO: verificare daca aceasta camera are booking-uri asociate => in viitor => schimbi respectivul booking, daca este posibil
         //                                                               => in prezent => nu poti sterge camera
+        if (standardRoomRepository.selectStandardRoomByRoomNumber(roomNumber) != null) {
+            standardRoomRepository.deleteStandardRoom(roomNumber);
+        }
+
+        if (premiumRoomRepository.selectPremiumRoomByRoomNumber(roomNumber) != null) {
+            premiumRoomRepository.deletePremiumRoom(roomNumber);
+        }
+
         hotel.getRoomList().removeIf(room -> room.getRoomNumber() == roomNumber);
         System.out.println("Room successfully deleted!");
+    }
+
+    public void deleteCustomer(String username) throws IOException {
+        auditService.writeAction("deleteCustomer");
+        hotel.getCustomerList().removeIf(customer -> Objects.equals(customer.getUsername(), username));
+        customerRepository.deleteCustomer(username);
+        System.out.println("Customer successfully deleted!");
     }
 
     public void checkIfRoomExists(int roomNr) throws RoomDoesntExistException {
@@ -283,13 +329,13 @@ public class AdminService implements ServiceInterface {
     public void showFunctionalities(String username) throws IOException {
         auditService.writeAction("showFunctionalities");
         int option = 0;
-        while (option != 12){
+        while (option != 14){
             Scanner scanner = new Scanner(System.in);
 
             while (true){
                 try {
                     System.out.println("\n\t-------------------- Admin Functionalities ---------------------\n");
-                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10/11/12/13):");
+                    System.out.println("\t Choose a functionality (1/2/3/4/5/6/7/8/9/10/11/12/13/14):");
                     System.out.println("\t 1. View all bookings.");
                     System.out.println("\t 2. View bookings for a given period of time.");
                     System.out.println("\t 3. View all payments.");
@@ -299,14 +345,15 @@ public class AdminService implements ServiceInterface {
                     System.out.println("\t 7. View all reviews.");
                     System.out.println("\t 8. Add customer.");
                     System.out.println("\t 9. Add room.");
-                    System.out.println("\t 10. Delete room.");
-                    System.out.println("\t 11. Change room status.");
-                    System.out.println("\t 12. Change room type.");
-                    System.out.println("\t 13. Exit.\n");
+                    System.out.println("\t 10. Delete customer.");
+                    System.out.println("\t 11. Delete room.");
+                    System.out.println("\t 12. Change room status.");
+                    System.out.println("\t 13. Change room type.");
+                    System.out.println("\t 14. Exit.\n");
                     option = Integer.parseInt(scanner.nextLine());
                     break;
                 } catch (NumberFormatException e){
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                     System.out.println("Try again!");
                 }
             }
@@ -323,7 +370,7 @@ public class AdminService implements ServiceInterface {
                             startDate = LocalDate.parse(scanner.nextLine());
                             break;
                         } catch (DateTimeParseException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -334,7 +381,7 @@ public class AdminService implements ServiceInterface {
                             endDate =  LocalDate.parse(scanner.nextLine());
                             break;
                         } catch (DateTimeParseException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -363,6 +410,12 @@ public class AdminService implements ServiceInterface {
                     addRoom();
                     break;
                 case (10):
+                    String usernameToDelete;
+                    System.out.println("\t Enter the username you want to delete: ");
+                    usernameToDelete = scanner.nextLine();
+                    deleteCustomer(usernameToDelete);
+                    break;
+                case (11):
                     int roomNr;
                     while (true) {
                         try {
@@ -371,14 +424,14 @@ public class AdminService implements ServiceInterface {
                             checkIfRoomExists(roomNr);
                             break;
                         } catch (RoomDoesntExistException | NumberFormatException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
 
                     deleteRoom(roomNr);
                     break;
-                case (11):
+                case (12):
                     while (true) {
                         try {
                             System.out.println("\t Enter room number: ");
@@ -386,7 +439,7 @@ public class AdminService implements ServiceInterface {
                             checkIfRoomExists(roomNr);
                             break;
                         } catch (RoomDoesntExistException | NumberFormatException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -402,7 +455,7 @@ public class AdminService implements ServiceInterface {
                             }
                             break;
                         } catch (RoomAvailablilityException | NumberFormatException  e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -414,7 +467,7 @@ public class AdminService implements ServiceInterface {
                         changeRoomStatus(roomNr, RoomStatus.AVAILABLE);
                     }
                     break;
-                case (12):
+                case (13):
                     while (true) {
                         try {
                             System.out.println("\t Enter room number: ");
@@ -422,7 +475,7 @@ public class AdminService implements ServiceInterface {
                             checkIfRoomExists(roomNr);
                             break;
                         } catch (RoomDoesntExistException | NumberFormatException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -438,7 +491,7 @@ public class AdminService implements ServiceInterface {
                             }
                             break;
                         } catch (RoomTypeException | NumberFormatException  e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
