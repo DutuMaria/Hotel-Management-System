@@ -28,10 +28,10 @@ This project implements the basic necessities of a real hotel => managing custom
 ![](/img/login.png)
 
 #### Admin menu
-![](/img/adminMenu.png)
+![](/img/AdminMenu.png)
 
 #### Customer menu
-![](/img/customerMenu.png)
+![](/img/CustomerMenu.png)
 
 
 ------------------------------
