@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class Review {
-    private static Integer count = 0;
-    private final Integer id;
+    public static Integer count = 0;
+    private Integer id;
     private int stars;
     private int service;
     private int rooms;
@@ -16,7 +16,7 @@ public class Review {
 
     public Review(int stars, int service, int rooms, int cleanliness, int sleepQuality, String description) {
         count++;
-        this.id = count;
+//        this.id = count;
         this.stars = stars;
         this.service = service;
         this.rooms = rooms;

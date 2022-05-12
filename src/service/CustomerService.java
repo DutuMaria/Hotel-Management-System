@@ -1,5 +1,7 @@
 package service;
 
+import dao.repository.CustomerRepository;
+import dao.repository.ReviewRepository;
 import entity.booking.Booking;
 import entity.hotel.Hotel;
 import entity.payment.Payment;
@@ -11,10 +13,10 @@ import entity.room.RoomStatus;
 import entity.user.Customer;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,16 +24,18 @@ import java.util.stream.Collectors;
 public class CustomerService implements ServiceInterface {
     private static CustomerService customerService;
     private static AuditService auditService;
-
     private static Hotel hotel;
-
     private static WriteToFileService writeToFileService;
+    private static ReviewRepository reviewRepository;
+    private static CustomerRepository customerRepository;
 
     private CustomerService(){
 
         auditService = AuditService.getAuditService();
         hotel = Hotel.getHotelInstance();
         writeToFileService = WriteToFileService.getWriteToFileService();
+        reviewRepository = ReviewRepository.getReviewRepository();
+        customerRepository = CustomerRepository.getCustomerRepository();
     }
 
     public static CustomerService getCustomerServiceInstance(){
@@ -189,19 +193,42 @@ public class CustomerService implements ServiceInterface {
                         System.out.println("Rate the hotel (type 1/2/3/4/5)");
                         int stars = Integer.parseInt(scanner.nextLine());
                         System.out.println("Rate the service (type 1/2/3/4/5)");
-                        int serviceRaiting = Integer.parseInt(scanner.nextLine());
+                        int serviceRating = Integer.parseInt(scanner.nextLine());
                         System.out.println("Rate the rooms (type 1/2/3/4/5)");
-                        int roomsRaiting = Integer.parseInt(scanner.nextLine());
+                        int roomsRating = Integer.parseInt(scanner.nextLine());
                         System.out.println("Rate the cleanliness (type 1/2/3/4/5)");
-                        int cleanlinessRaiting = Integer.parseInt(scanner.nextLine());
+                        int cleanlinessRating = Integer.parseInt(scanner.nextLine());
                         System.out.println("Rate the sleepQuality (type 1/2/3/4/5)");
-                        int sleepQualityRaiting = Integer.parseInt(scanner.nextLine());
+                        int sleepQualityRating = Integer.parseInt(scanner.nextLine());
                         System.out.println("Write a review");
                         String description  = scanner.nextLine();
-                        Review review = new Review(stars, serviceRaiting, roomsRaiting, cleanlinessRaiting, sleepQualityRaiting, description);
+                        Review review = new Review(stars, serviceRating, roomsRating, cleanlinessRating, sleepQualityRating, description);
                         hotel.getReviewList().add(review);
-                        System.out.println("Thank you for reviewing!");
-                        writeToFileService.writeReview(review);
+                        reviewRepository.insertReview(stars, serviceRating, roomsRating, cleanlinessRating, sleepQualityRating, description);
+                        System.out.println("Do you want to change the hotel rating? (yes/no)");
+                        String answer  = scanner.nextLine();
+
+                        if (Objects.equals(answer, "yes")) {
+                            System.out.println("Rate the hotel (type 1/2/3/4/5)");
+                            stars = Integer.parseInt(scanner.nextLine());
+                            updateStarsReview(Review.count, stars); // aici posibil problema din cauza id-ului
+                            review.setStars(stars);
+                        }
+
+                        System.out.println("Do you want to save this review or detele it?");
+                        System.out.println("Type 1 if you want to save this review!");
+                        System.out.println("Type 2 if you want to delete this review!");
+                        int saveOrDeleteReview;
+                        saveOrDeleteReview = Integer.parseInt(scanner.nextLine());
+
+                        if (saveOrDeleteReview == 1) {
+                            writeToFileService.writeReview(review);
+                            System.out.println("Thank you for reviewing!");
+                        }
+
+                        if (saveOrDeleteReview == 2) {
+                            deleteReview(Review.count);
+                        }
                         return;
                     }
                 }
@@ -209,6 +236,21 @@ public class CustomerService implements ServiceInterface {
                 break;
             }
         }
+    }
+
+    private void updateStarsReview(int id, int stars) throws IOException {
+        auditService.writeAction("updateStarsReview");
+        //TODO *
+        reviewRepository.updateStarsReview(id, stars);
+        System.out.println("Review successfully updated");
+    }
+
+    private void deleteReview(int id) throws IOException {
+        auditService.writeAction("deleteReview");
+        //TODO *
+//        hotel.getReviewList().removeIf(review ->review.getId() == id);
+        reviewRepository.deleteReview(id);
+        System.out.println("Review successfully deleted!");
     }
 
     public void checkOut(int idBooking, String username) throws IOException {
@@ -245,26 +287,28 @@ public class CustomerService implements ServiceInterface {
         }
     }
 
-    public void changeUsername(String username) throws IOException {
+    public String changeUsername(String username) throws IOException {
         auditService.writeAction("changeUsername");
         Customer c;
 
         for (var customer : hotel.getCustomerList()){
             if (customer.getUsername().equals(username)){
-                c = customer;
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Type your password: ");
                 String password = scanner.nextLine();
                 boolean usernameChanged = false;
 
-                if (password.equals(c.getPassword())){
+                if (password.equals(customer.getPassword())){
                     while (!usernameChanged){
                         System.out.println("Type new username: ");
                         String newUsername = scanner.nextLine();
-                        if (!newUsername.equals(c.getUsername())){
-                            c.setUsername(newUsername);
+                        if (!newUsername.equals(customer.getUsername())){
+                            customer.setUsername(newUsername);
+//                            System.out.println(customer.getUsername());
                             usernameChanged = true;
+                            customerRepository.updateCustomerUsername(username, newUsername);
                             System.out.println("Username has been successfully changed!");
+                            return newUsername;
                         } else {
                             System.out.println("New username cannot be the same as your old username.");
                         }
@@ -275,6 +319,7 @@ public class CustomerService implements ServiceInterface {
                 break;
             }
         }
+        return null;
     }
 
     public void changePassword(String username) throws IOException {
@@ -296,6 +341,7 @@ public class CustomerService implements ServiceInterface {
                         if (!newPassword.equals(currentPassword)){
                             c.setPassword(newPassword);
                             passwordChanged = true;
+                            customerRepository.updateCustomerPassword(username, newPassword);
                             System.out.println("Password has been successfully changed!");
                         } else {
                             System.out.println("New password cannot be the same as your old password.");
@@ -359,7 +405,7 @@ public class CustomerService implements ServiceInterface {
                     option = Integer.parseInt(scanner.nextLine());
                     break;
                 } catch (NumberFormatException e){
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                     System.out.println("Try again!");
                 }
             }
@@ -382,7 +428,7 @@ public class CustomerService implements ServiceInterface {
                             id = Integer.parseInt(scanner.nextLine());
                             break;
                         } catch (NumberFormatException e){
-                            System.out.println(e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Try again!");
                         }
                     }
@@ -390,7 +436,8 @@ public class CustomerService implements ServiceInterface {
                     payBooking(id, username);
                     break;
                 case (5):
-                    changeUsername(username);
+                    String newUsername = changeUsername(username);
+                    username = newUsername;
                     break;
                 case (6):
                     changePassword(username);

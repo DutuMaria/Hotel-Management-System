@@ -14,7 +14,8 @@ public class Customer extends User  {
     private Set<Payment> paymentSet;
 
     public Customer(String firstName, String lastName, UserDocument userDocument, String address, String telephone, String username, String password, String email) {
-        super(count, firstName, lastName, username, password, email);
+        super(firstName, lastName, username, password, email);
+//        super(count, firstName, lastName, username, password, email);
         this.userDocument = userDocument;
         this.address = address;
         this.telephone = telephone;

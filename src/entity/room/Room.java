@@ -1,7 +1,8 @@
 package entity.room;
 
 public abstract class Room{
-    protected static Integer count = 0;
+//    protected static Integer count = 0;
+    protected Integer id;
     protected Integer roomNumber;
     //    protected Integer floor;
     protected RoomStatus roomStatus;
@@ -9,7 +10,7 @@ public abstract class Room{
 
 
     public Room(Integer roomNumber, RoomType roomType) {
-        count++;
+//        count++;
         this.roomNumber = roomNumber;
         this.roomStatus = RoomStatus.AVAILABLE;
         this.roomType = roomType;

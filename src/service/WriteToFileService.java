@@ -4,7 +4,6 @@ import entity.review.Review;
 import entity.room.Room;
 import entity.user.Customer;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,8 +44,8 @@ public class WriteToFileService {
             fileWriter.flush();
 
         } catch (IOException e) {
-//            e.printStackTrace();
-            System.out.println("\n\tException: " + e.getMessage());
+            e.printStackTrace();
+        System.out.println("Try again!");
         }
     }
 
@@ -69,8 +68,8 @@ public class WriteToFileService {
             fileWriter.flush();
 
         } catch (IOException e) {
-//            e.printStackTrace();
-            System.out.println("\n\tException: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("Try again!");
         }
     }
 
@@ -90,8 +89,8 @@ public class WriteToFileService {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-//            e.printStackTrace();
-            System.out.println("\n\tException: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("Try again!");
         }
     }
 

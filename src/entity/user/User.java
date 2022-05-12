@@ -1,15 +1,22 @@
 package entity.user;
 
 public abstract class  User {
-    private final Integer id;
+    protected Integer id;
     protected String firstName;
     protected String lastName;
     protected String username;
     protected String password;
     protected String email;
 
+    public User(String firstName, String lastName, String username, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
-    public User(Integer id, String firstName, String lastName,String username, String password, String email) {
+    public User(Integer id, String firstName, String lastName, String username, String password, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -17,7 +24,6 @@ public abstract class  User {
         this.password = password;
         this.email = email;
 
-        //TODO => REGEX
     }
 
     public Integer getId() {

@@ -1,5 +1,9 @@
 package service;
 
+import dao.repository.CustomerRepository;
+import dao.repository.PremiumRoomRepository;
+import dao.repository.ReviewRepository;
+import dao.repository.StandardRoomRepository;
 import entity.review.Review;
 import entity.room.Room;
 import entity.room.RoomType;
@@ -14,8 +18,18 @@ import java.util.List;
 
 public class ReadFromFileService {
     public static ReadFromFileService readFromFileService;
+    public static CustomerRepository customerRepository;
+    public static ReviewRepository reviewRepository;
+    public static StandardRoomRepository standardRoomRepository;
+    public static PremiumRoomRepository premiumRoomRepository;
 
-    private ReadFromFileService() {}
+
+    private ReadFromFileService() {
+        customerRepository = CustomerRepository.getCustomerRepository();
+        reviewRepository = ReviewRepository.getReviewRepository();
+        standardRoomRepository = StandardRoomRepository.getStandardRoomRepository();
+        premiumRoomRepository = PremiumRoomRepository.getPremiumRoomRepository();
+    }
 
     public static ReadFromFileService getReadFromFileService() {
         if (readFromFileService == null)
@@ -50,12 +64,14 @@ public class ReadFromFileService {
                 String email = elem[7];
                 Customer customer = new Customer(firstName, lastName, userDocument, address, telephone, username, password, email);
                 customers.add(customer);
+//                DOAR O DATA SE APELEAZA CA SA INCARC DATELE DIN CSV IN TABEL
+//                customerRepository.insertCustomer(firstName, lastName, userDocument, address, telephone, username, password, email);
                 line = buffer.readLine();
 
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             System.out.println("Try again!");
         }
 
@@ -97,11 +113,13 @@ public class ReadFromFileService {
 
                 Review  review = new Review(stars, service, rooms, cleanliness, sleepQuality, description);
                 reviews.add(review);
+//                DOAR O DATA SE APELEAZA CA SA INCARC DATELE DIN CSV IN TABEL
+//                reviewRepository.insertReview(stars, service, rooms, cleanliness, sleepQuality, description);
                 line = buffer.readLine();
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             System.out.println("Try again!");
         }
 
@@ -111,7 +129,7 @@ public class ReadFromFileService {
    public <T extends Room> List<T> readRooms(String fisier, Class<T> cls) {
         List<T> rooms = new ArrayList<>();
         T room;
-       Integer roomNumber;
+       int roomNumber;
        String roomTypeString;
        RoomType roomType = RoomType.SINGLE;
 
@@ -135,6 +153,16 @@ public class ReadFromFileService {
 
                room = cls.cast(cls.getDeclaredConstructor(cArg).newInstance(roomNumber, roomType));
                rooms.add(room);
+
+//                DOAR O DATA SE APELEAZA CA SA INCARC DATELE DIN CSV IN TABEL
+//               if (cls.toString().equalsIgnoreCase("class entity.room.standardroom")) {
+//                   standardRoomRepository.insertStandardRoom(roomNumber, roomType);
+//               }
+//
+//               if (cls.toString().equalsIgnoreCase("class entity.room.premiumroom")) {
+//                   premiumRoomRepository.insertPremiumRoom(roomNumber, roomType);
+//               }
+
                line = buffer.readLine();
            }
 
