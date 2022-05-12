@@ -95,6 +95,13 @@ Condiția de punctare a proiectelor:
     - [x] Cel puțin o clasa serviciu care sa expună operațiile sistemului
     - [x] O clasa Main din care sunt făcute apeluri către servicii
 
+
+Clasele pentru care am facut CSV 
+- Review
+- Customer
+- PremiumRoom
+- StandardRoom
+
 ### Etapa II (3 Mai):
 
 1. Extindeți proiectul din prima etapă prin realizarea persistenței utilizând fișiere.
@@ -109,6 +116,14 @@ Condiția de punctare a proiectelor:
    - [x] Utilizare streams + lambda
    - [x] Utilizare exceptii
    - [x] Utilizare colectii in loc de array-uri
+
+
 ### Etapa III (31 Mai):
 - [x] Înlocuiți serviciile realizate în etapă a II-a cu servicii care să asigure persistența utilizând baza de date folosind JDBC.
 - [x] Să se realizeze servicii care să expună operații de tip create, read, update, delete pentru cel puțin 4 dintre clasele definite.
+
+Clasele pentru care am facut tabele in baza de date
+- Review
+- Customer
+- PremiumRoom
+- StandardRoom
